@@ -68,7 +68,7 @@ export default function EventsScreen() {
                   />
                   <View style={styles.detailsBox}>
                     <Text variant="labelSmall">{`${item.start_date_details.month}/${item.start_date_details.day}/${item.start_date_details.year} - ${item.end_date_details.month}/${item.end_date_details.day}/${item.end_date_details.year}`}</Text>
-                    <Text variant="titleSmall">{item.title}</Text>
+                    <Text variant="titleSmall" numberOfLines={1} ellipsizeMode='tail'>{item.title}</Text>
                     <Text variant="labelSmall">{`Cost: ${item.cost}`}</Text>
                   </View>
                 </Card.Content>

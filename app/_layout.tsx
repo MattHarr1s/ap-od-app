@@ -10,6 +10,7 @@ import {
 } from "react-native-paper";
 import { Appbar } from "react-native-paper";
 import { router } from "expo-router";
+import { Auth0Provider } from "react-native-auth0";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
 export {
@@ -53,51 +54,56 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <PaperProvider theme={DefaultTheme}>
-      <SafeAreaProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="events"
-            options={{
-              headerShown: true,
-              title: "EVENTS",
-              headerRight(props) {
-                return (
-                  <Appbar.Action
-                    icon="tune-variant"
-                    onPress={() => {
-                      alert("Filter");
-                    }}
-                  />
-                );
-              },
-            }}
-          />
-          <Stack.Screen
-            name="news"
-            options={{ headerShown: true, title: "NEWS" }}
-          />
-          <Stack.Screen
-            name="profile"
-            options={{ headerShown: true, title: "PROFILE" }}
-          />
-          <Stack.Screen
-            name="rewards"
-            options={{ headerShown: true, title: "MEMBER REWARDS" }}
-          />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-        </Stack>
-        <Appbar style={styles.appBar}>
-          <Appbar.Action
-            icon="account"
-            onPress={() => {
-              router.push("/profile");
-            }}
-          />
-        </Appbar>
-      </SafeAreaProvider>
-    </PaperProvider>
+    <Auth0Provider
+      domain="dev-v4w65pck0ernl172.us.auth0.com"
+      clientId="mAbFw0HUixGgHaCl6f6vSwUhbJRNXRIG"
+    >
+      <PaperProvider theme={DefaultTheme}>
+        <SafeAreaProvider>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="events"
+              options={{
+                headerShown: true,
+                title: "EVENTS",
+                headerRight(props) {
+                  return (
+                    <Appbar.Action
+                      icon="tune-variant"
+                      onPress={() => {
+                        alert("Filter");
+                      }}
+                    />
+                  );
+                },
+              }}
+            />
+            <Stack.Screen
+              name="news"
+              options={{ headerShown: true, title: "NEWS" }}
+            />
+            <Stack.Screen
+              name="profile"
+              options={{ headerShown: true, title: "PROFILE" }}
+            />
+            <Stack.Screen
+              name="rewards"
+              options={{ headerShown: true, title: "MEMBER REWARDS" }}
+            />
+            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+          </Stack>
+          <Appbar style={styles.appBar}>
+            <Appbar.Action
+              icon="account"
+              onPress={() => {
+                router.push("/profile");
+              }}
+            />
+          </Appbar>
+        </SafeAreaProvider>
+      </PaperProvider>
+    </Auth0Provider>
   );
 }
 
