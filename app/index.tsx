@@ -86,6 +86,28 @@ const categories = [
     image: "https://picsum.photos/700",
   },
 ];
+const rewardsItems = [
+  {
+    id: 1,
+    title: "Discounts",
+    image: "https://picsum.photos/700",
+  },
+  {
+    id: 2,
+    title: "Events",
+    image: "https://picsum.photos/700",
+  },
+  {
+    id: 3,
+    title: "Resources",
+    image: "https://picsum.photos/700",
+  },
+  {
+    id: 4,
+    title: "Volunteer",
+    image: "https://picsum.photos/700",
+  },
+];
 
 export default function HomeScreen() {
   const { authorize, clearSession, user, error, getCredentials, isLoading } =
@@ -114,9 +136,7 @@ export default function HomeScreen() {
       console.log(json);
       setPosts(json);
     };
-
     getPosts();
-
     getEvents();
   }, []);
 
@@ -133,61 +153,68 @@ export default function HomeScreen() {
       />
       <Divider />
       <ScrollView>
-      <Surface style={styles.surface}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>
-          Featured Events
-        </Text>
-      </View>
-      <Divider />
-      <View style={styles.eventsSwiper}>
-          {events.length > 0 && (
-            <SwiperFlatList
-              autoplay
-              autoplayDelay={6}
-              autoplayLoop
-              index={0}
-              data={events}
-              paginationActiveColor="#FF6347"
-              paginationDefaultColor="gray"
-              paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
-              paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
-              snapToAlignment="center" // Items snap to center
-              snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
-              decelerationRate="fast"
-              renderItem={({ item }) => (
-                <Surface
-                  key={item.id}
-                  style={styles.eventSurface}
-                  elevation={3}
-                >
-                  <Card style={styles.eventCard}>
-                    <Card.Cover
-                      source={{ uri: item.image.url }}
-                      resizeMode="contain"
-                    />
-                    <Card.Title
-                      title={item.title}
-                      subtitle={
-                        item.start_date_details.month +
-                        " " +
-                        item.start_date_details.day +
-                        ", " +
-                        item.start_date_details.year
-                      }
-                    />
-                    <Card.Content>
-                      {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
-                    </Card.Content>
-                    <Card.Actions>
-                      <Button>View Event</Button>
-                    </Card.Actions>
-                  </Card>
-                </Surface>
-              )}
-            />
-          )}
-        </View>
+        <Surface style={styles.surface}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerText}>Featured Events</Text>
+          </View>
+         
+          <View style={styles.eventsSwiper}>
+            {events.length > 0 && (
+              <SwiperFlatList
+                autoplay
+                autoplayDelay={6}
+                autoplayLoop
+                index={0}
+                data={events}
+                paginationActiveColor="#FF6347"
+                paginationDefaultColor="gray"
+                paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+                paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+                snapToAlignment="center" // Items snap to center
+                snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+                decelerationRate="fast"
+                renderItem={({ item }) => (
+                  <Surface
+                    key={item.id}
+                    style={styles.eventSurface}
+                    elevation={3}
+                  >
+                    <Card style={styles.eventCard}>
+                      <Card.Cover
+                        source={{ uri: item.image.url }}
+                        resizeMode="contain"
+                      />
+                      <Card.Title
+                        title={item.title}
+                        subtitle={
+                          item.start_date_details.month +
+                          " " +
+                          item.start_date_details.day +
+                          ", " +
+                          item.start_date_details.year
+                        }
+                      />
+                      <Card.Content>
+                        {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
+                      </Card.Content>
+                      <Card.Actions>
+                        <Button>View Event</Button>
+                      </Card.Actions>
+                    </Card>
+                  </Surface>
+                )}
+              />
+            )}
+          </View>
+          <View style={styles.buttonsContainer}>
+            <Link href="/events" asChild>
+            <Button
+              mode="contained"             
+            >
+              All Events
+            </Button>            
+            </Link>
+          </View>
         </Surface>
         <Surface style={styles.surface} elevation={3}>
           <View>
@@ -203,71 +230,122 @@ export default function HomeScreen() {
         </Surface>
         <Divider />
         <Surface style={styles.surface} elevation={3}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            width: "100%",
-            padding: 10,
-          }}
-        >
-          <Text
-            variant="headlineLarge"
-            style={{ fontSize: 30, fontWeight: "bold", marginTop: 5 }}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+              padding: 10,
+            }}
           >
-            Featured News
-          </Text>
-        </View>       
-        <View>
-          <View style={styles.eventsSwiper}>
-          {posts.length > 0 && (
-            <SwiperFlatList
-              autoplay
-              autoplayDelay={6}
-              autoplayLoop
-              index={0}
-              data={posts}
-              paginationActiveColor="#FF6347"
-              paginationDefaultColor="gray"
-              paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
-              paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
-              snapToAlignment="center" // Items snap to center
-              snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
-              decelerationRate="fast"
-              renderItem={({ item }) => (
-                <Surface
-                  key={item.id}
-                  style={styles.eventSurface}
-                  elevation={3}
-                >
-                  <Card style={styles.eventCard}>
-                    <Card.Cover
-                      source={{ uri: item._embedded["wp:featuredmedia"][0].source_url }}
-                      resizeMode="contain"
-                    />
-                    <Card.Title
-                      title={item.title.rendered}
-                      subtitle={item.date}
-                    />
-                    <Card.Content>
-                      {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
-                    </Card.Content>
-                    <Card.Actions>
-                      <Button>View Post</Button>
-                    </Card.Actions>
-                  </Card>
-                </Surface>
+            <Text
+              variant="headlineLarge"
+              style={{ fontSize: 30, fontWeight: "bold", marginTop: 5 }}
+            >
+              Featured News
+            </Text>
+          </View>
+          <View>
+            <View style={styles.eventsSwiper}>
+              {posts.length > 0 && (
+                <SwiperFlatList
+                  autoplay
+                  autoplayDelay={6}
+                  autoplayLoop
+                  index={0}
+                  data={posts}
+                  paginationActiveColor="#FF6347"
+                  paginationDefaultColor="gray"
+                  paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+                  paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+                  snapToAlignment="center" // Items snap to center
+                  snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+                  decelerationRate="fast"
+                  renderItem={({ item }) => (
+                    <Surface
+                      key={item.id}
+                      style={styles.eventSurface}
+                      elevation={3}
+                    >
+                      <Card style={styles.eventCard}>
+                        <Card.Cover
+                          source={{
+                            uri:
+                              item._embedded &&
+                              item._embedded["wp:featuredmedia"] &&
+                              item._embedded["wp:featuredmedia"][0] &&
+                              item._embedded["wp:featuredmedia"][0].source_url
+                                ? item._embedded["wp:featuredmedia"][0]
+                                    .source_url
+                                : "", // Provide a default image URL here
+                          }}
+                          resizeMode="contain"
+                        />
+                        <Card.Title
+                          title={item.title.rendered}
+                          subtitle={item.date}
+                        />
+                        <Card.Content>
+                          {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
+                        </Card.Content>
+                        <Card.Actions>
+                          <Button>View Post</Button>
+                        </Card.Actions>
+                      </Card>
+                    </Surface>
+                  )}
+                />
               )}
-            />
-          )}  
-        </View>    
-          
-        
-        </View>
+            </View>
+          </View>
         </Surface>
         <Divider />
-      </ScrollView>
+        <Surface style={styles.rewardsSurface} elevation={3}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerText}>Member Rewards</Text>
+          </View>
+          <View style={styles.chipContainer}>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+              Become a member today and enjoy these rewards and more!
+            </Text>
+          </View>
+          <SwiperFlatList
+            autoplay
+            autoplayDelay={5}
+            autoplayLoop
+            index={0}
+            data={rewardsItems}
+            paginationActiveColor="#FF6347"
+            paginationDefaultColor="gray"
+            paginationStyleItem={{ width: 8, height: 8 }}
+            snapToAlignment="center"
+            snapToInterval={width * 0.8 + 10 * 2}
+            decelerationRate="fast"
+            renderItem={({ item }) => (
+              <Card key={item.id} style={styles.rewardCard}>
+                <Card.Cover source={{ uri: item.image }} resizeMode="contain" />
+                <Card.Title title={item.title} />
+              </Card>
+            )}
+          />
 
+          <View style={styles.rewardsButtonsContainer}>
+            <Button
+              mode="contained"
+              onPress={() => alert("Learn More Pressed")}
+            >
+              Learn More
+            </Button>
+            <Button
+              mode="contained"
+              onPress={() => alert("Sign Up Now Pressed")}
+              style={styles.signUpButton}
+            >
+              Sign Up Now
+            </Button>
+          </View>
+        </Surface>
+      </ScrollView>
       <StatusBar style={Platform.OS === "ios" ? "light" : "dark"} />
     </View>
   );
@@ -307,6 +385,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   eventsSwiper: {
+    marginTop: 20,
     height: height * 0.5, // Adjust this value if needed
     width: "100%", // Full width
     justifyContent: "center",
@@ -343,20 +422,47 @@ const styles = StyleSheet.create({
   },
   surface: {
     borderRadius: 15, // Adjust for desired roundness
-    overflow: 'hidden', // Ensures inner components don't overflow rounded corners
+    overflow: "hidden", // Ensures inner components don't overflow rounded corners
     elevation: 3, // Adjust for desired shadow depth
     margin: 10, // Spacing from the surrounding elements
-    backgroundColor: '#fff', // Adjust background color as needed
+    backgroundColor: "#fff", // Adjust background color as needed
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     padding: 20,
   },
   headerText: {
     fontSize: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 10,
+  },
+  rewardsSurface: {
+    borderRadius: 15,
+    overflow: "hidden",
+    margin: 10,
+    padding: 10,
+    backgroundColor: "#fff",
+  },
+  rewardCard: {
+    width: width * 0.8,
+    height: width * 0.5, // Adjust based on your needs
+    marginHorizontal: 10,
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 0,
+    marginBottom: 20,
+  },
+  rewardsButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 15,
+    marginBottom: 20,
+  },
+  signUpButton: {
+    marginLeft: 10,
   },
 });
