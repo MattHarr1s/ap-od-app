@@ -42,7 +42,7 @@ export default function EventsScreen() {
   useEffect(() => {
     const getEvents = async () => {
       const response = await fetch(
-        "https://ap-od.org/wp-json/tribe/events/v1/events"
+        "https://staging.ap-od.org/wp-json/tribe/events/v1/events"
       );
       const json = await response.json();
       setEvents(json.events);
