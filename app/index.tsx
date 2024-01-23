@@ -9,21 +9,6 @@ import { useAuth0 } from "react-native-auth0";
 const logo = require("../assets/images/ap_logo_left_v2.png");
 const purpleBackground = require("../assets/images/purple_button.png");
 
-
-const LoginButton = () => {
-  const {authorize} = useAuth0();
-
-  const onPress = async () => {
-      try {
-          await authorize();
-      } catch (e) {
-          console.log(e);
-      }
-  };
-
-  return <Button onPress={onPress} title="Log in" />
-}
-
 export default function HomeScreen() {
   const {authorize, clearSession, user, error, getCredentials, isLoading} = useAuth0();
   return (
@@ -32,8 +17,6 @@ export default function HomeScreen() {
         source={logo}
         style={{ width: "80%", height: 100, objectFit: "contain" }}
       />
-
-      <LoginButton />
       <Link href="/news" asChild>
       <Button mode="contained" style={styles.buttonOne} >         
           NEWS      
