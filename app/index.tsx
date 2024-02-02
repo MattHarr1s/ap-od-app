@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, Image, Dimensions } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { Link } from "expo-router";
 import { Button } from "react-native-paper";
 import { Chip, Card, Divider, Text } from "react-native-paper";
@@ -116,6 +118,7 @@ export default function HomeScreen() {
   const [eventsLoading, setEventsLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
+  // const { colors } = useTheme();
 
   useEffect(() => {
     const getEvents = async () => {
@@ -126,7 +129,6 @@ export default function HomeScreen() {
 
       setEvents(json.events);
       setEventsLoading(false);
-
     };
 
     //create function to get posts from wordpress rest api using fetch and https://staging.ap-od.org/wp-json/wp/v2/posts/
@@ -134,7 +136,7 @@ export default function HomeScreen() {
       const response = await fetch(
         "https://staging.ap-od.org/wp-json/wp/v2/posts?_embed"
       );
-      const json = await response.json();     
+      const json = await response.json();
       setPosts(json);
       setPostsLoading(false);
     };
@@ -159,10 +161,11 @@ export default function HomeScreen() {
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Featured Events</Text>
           </View>
-         
+
           <View style={styles.eventsSwiper}>
-            {eventsLoading && <Text>Loading...</Text>}
-            {events.length > 0 && (
+            {eventsLoading ? (
+              <ActivityIndicator animating={true} />
+            ) : (
               <SwiperFlatList
                 autoplay
                 autoplayDelay={6}
@@ -201,7 +204,9 @@ export default function HomeScreen() {
                         {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
                       </Card.Content>
                       <Card.Actions>
-                        <Button>View Event</Button>
+                        <Link href={`/event/${item.slug}`} asChild>
+                          <Button>View Event</Button>
+                        </Link>
                       </Card.Actions>
                     </Card>
                   </Surface>
@@ -211,11 +216,7 @@ export default function HomeScreen() {
           </View>
           <View style={styles.buttonsContainer}>
             <Link href="/events" asChild>
-            <Button
-              mode="contained"             
-            >
-              All Events
-            </Button>            
+              <Button mode="contained">All Events</Button>
             </Link>
           </View>
         </Surface>
@@ -250,8 +251,9 @@ export default function HomeScreen() {
           </View>
           <View>
             <View style={styles.eventsSwiper}>
-              {postsLoading && <Text>Loading...</Text>}
-              {posts.length > 0 && (
+              {postsLoading ? (
+                <ActivityIndicator animating={true} />
+              ) : (
                 <SwiperFlatList
                   autoplay
                   autoplayDelay={6}
@@ -266,8 +268,8 @@ export default function HomeScreen() {
                   snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
                   decelerationRate="fast"
                   renderItem={({ item }) => (
-                    <Surface
-                      key={item.id}
+                    <View style={styles.surfaceWrap} key={item.id}>
+                    <Surface                      
                       style={styles.eventSurface}
                       elevation={3}
                     >
@@ -297,6 +299,7 @@ export default function HomeScreen() {
                         </Card.Actions>
                       </Card>
                     </Surface>
+                    </View>
                   )}
                 />
               )}
@@ -304,6 +307,7 @@ export default function HomeScreen() {
           </View>
         </Surface>
         <Divider />
+        <View style={styles.surfaceWrap}>
         <Surface style={styles.rewardsSurface} elevation={3}>
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Member Rewards</Text>
@@ -353,6 +357,7 @@ export default function HomeScreen() {
             </Button>
           </View>
         </Surface>
+        </View>
       </ScrollView>
       <StatusBar style={Platform.OS === "ios" ? "light" : "dark"} />
     </View>
@@ -428,9 +433,16 @@ const styles = StyleSheet.create({
     paddingVertical: 5, // Adjust for vertical padding inside chip
     paddingHorizontal: 10, // Adjust for horizontal padding inside chip
   },
+  surfaceWrap: {
+    overflow: "hidden",
+    borderRadius: 15,
+    margin: 10,
+    padding: 10,
+    backgroundColor: "#fff",
+  },
   surface: {
     borderRadius: 15, // Adjust for desired roundness
-    overflow: "hidden", // Ensures inner components don't overflow rounded corners
+    
     elevation: 3, // Adjust for desired shadow depth
     margin: 10, // Spacing from the surrounding elements
     backgroundColor: "#fff", // Adjust background color as needed
@@ -448,14 +460,14 @@ const styles = StyleSheet.create({
   },
   rewardsSurface: {
     borderRadius: 15,
-    overflow: "hidden",
+    
     margin: 10,
     padding: 10,
     backgroundColor: "#fff",
   },
   rewardCard: {
     width: width * 0.8,
-    height: width * 0.5, // Adjust based on your needs
+    height: width * 0.6, // Adjust based on your needs
     marginHorizontal: 10,
   },
   buttonsContainer: {
@@ -474,4 +486,3 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 });
- 

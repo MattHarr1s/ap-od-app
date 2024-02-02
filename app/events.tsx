@@ -1,10 +1,19 @@
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, memo, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Platform, StyleSheet, FlatList, Dimensions, View, Text } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
+import {
+  Platform,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  View,
+  Text,
+} from "react-native";
 import { Card, Surface, Button } from "react-native-paper";
 import * as SplashScreen from "expo-splash-screen";
-const { width, height } = Dimensions.get("window");
+import { Link } from "expo-router";
 
+const { width, height } = Dimensions.get("window");
 
 type Event = {
   id: number;
@@ -29,53 +38,63 @@ type Event = {
     url: string;
   };
 };
-const EventItem = memo(({ item }) => (
+
+const keyExtractor = (item: Event) => item.id.toString();
+
+const EventItem = memo(({ item }: { item: Event }) => (
   <Surface key={item.id} style={styles.eventSurface} elevation={3}>
     <Card style={styles.eventCard}>
       <Card.Cover source={{ uri: item.image.url }} resizeMode="contain" />
       <Card.Title title={item.title} subtitle={item.date} />
-      <Card.Content>
-        {/* Content here */}
-      </Card.Content>
+      <Card.Content>{/* Content here */}</Card.Content>
       <Card.Actions>
-        <Button>View Post</Button>
+        <Link href={`/event/${item.slug}`} asChild>
+          <Button>View Event</Button>
+        </Link>
       </Card.Actions>
     </Card>
   </Surface>
 ));
 
-const renderItem = ({ item }) => <EventItem item={item} />;
-
 export default function EventsScreen() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const renderItem = useCallback(
+    ({ item }: { item: Event }) => <EventItem item={item} />,
+    []
+  );
+
   useEffect(() => {
     const getEvents = async () => {
-      const response = await fetch(
-        "https://staging.ap-od.org/wp-json/tribe/events/v1/events"
-      );
-      const json = await response.json();
-      setEvents(json.events);
-      setLoading(false);
-      SplashScreen.hideAsync();
+      try {
+        const response = await fetch(
+          "https://staging.ap-od.org/wp-json/tribe/events/v1/events"
+        );
+        const json = await response.json();
+        setEvents(json.events);
+        setLoading(false);
+        SplashScreen.hideAsync();
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
     };
-
     getEvents();
   }, []);
 
   return (
     <View style={styles.container}>
-      {loading && <Text>Loading...</Text>}
-      {!loading && (
+      {loading ? (
+        <ActivityIndicator animating={true} />
+      ) : (
         <FlatList
           data={events}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          // Add the following props for performance optimization
-          initialNumToRender={10} // Adjust the number based on your needs
-          maxToRenderPerBatch={10} // Adjust the number based on your needs
-          windowSize={5} // Adjust the number based on your needs
+          keyExtractor={keyExtractor}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={5}
         />
       )}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
@@ -89,7 +108,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
-    
   },
   title: {
     fontSize: 20,
@@ -128,7 +146,7 @@ const styles = StyleSheet.create({
     height: "100%", // Card takes the full height of Surface
     justifyContent: "flex-start",
   },
- 
+
   chipContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

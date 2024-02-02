@@ -5,7 +5,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 
 import { useEffect, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
-import { Text, Card, Paragraph } from "react-native-paper";
+import { Text, Card, Paragraph, ActivityIndicator } from "react-native-paper";
 import { Surface } from "react-native-paper";
 import RenderHTML from "react-native-render-html";
 import * as SplashScreen from "expo-splash-screen";
@@ -92,7 +92,7 @@ export default function EventScreen() {
   , [event]);
 
   if (loading || !event) {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator animating={true} />;
   }
 
   return (
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     margin: 20,
+    marginTop: 20,
   },
   title: {
     fontSize: 20,
