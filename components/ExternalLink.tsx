@@ -1,28 +1,22 @@
-import { Link } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { Platform } from 'react-native';
+import { Card, Button, Surface } from 'react-native-paper';
 
-export function ExternalLink(
-  props: Omit<React.ComponentProps<typeof Link>, 'href'> & { href: string }
-) {
-  return (
-    <Link
-      hrefAttrs={{
-        // On web, launch the link in a new tab.
-        target: '_blank',
-      }}
-      {...props}
-      // @ts-expect-error: External URLs are not typed.
-      href={props.href}
-      onPress={(e) => {
-        if (Platform.OS !== 'web') {
-          // Prevent the default behavior of linking to the default browser on native.
-          e.preventDefault();
-          // Open the link in an in-app browser.
-          WebBrowser.openBrowserAsync(props.href as string);
-        }
-      }}
-    />
-  );
-}
+const EventCard = ({ event }) => (
+  <Surface style={styles.eventSurface} elevation={3}>
+    <Card style={styles.eventCard}>
+      <Card.Cover source={{ uri: event.image.url }} resizeMode="contain" />
+      <Card.Title
+        title={event.title}
+        subtitle={`${event.start_date_details.month} ${event.start_date_details.day}, ${event.start_date_details.year}`}
+      />
+      <Card.Content>
+        {/* Additional content can be placed here */}
+      </Card.Content>
+      <Card.Actions>
+        <Button>View Event</Button>
+      </Card.Actions>
+    </Card>
+  </Surface>
+);
+
+export default EventCard;

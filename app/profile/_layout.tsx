@@ -53,18 +53,6 @@ const ProfileScreen = () => {
 
 export default ProfileScreen;
 
-// export default function ProfileScreen() {
-//   const {authorize, clearSession, user, error, getCredentials, isLoading} = useAuth0();
-
-//   return (
-//     <View style={styles.container}>
-//       {user ? (
-//         <>
-//           }
-
-//     </View>
-//   );
-// }
 
 const styles = StyleSheet.create({
   container: {

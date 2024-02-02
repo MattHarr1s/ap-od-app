@@ -113,18 +113,20 @@ export default function HomeScreen() {
   const { authorize, clearSession, user, error, getCredentials, isLoading } =
     useAuth0();
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
     const getEvents = async () => {
       const response = await fetch(
-        "https://staging.ap-od.org/wp-json/tribe/events/v1/events"
+        "https://staging.ap-od.org/wp-json/tribe/events/v1/events?per_page=4&categories=147"
       );
       const json = await response.json();
 
       setEvents(json.events);
-      setLoading(false);
+      setEventsLoading(false);
+
     };
 
     //create function to get posts from wordpress rest api using fetch and https://staging.ap-od.org/wp-json/wp/v2/posts/
@@ -132,9 +134,9 @@ export default function HomeScreen() {
       const response = await fetch(
         "https://staging.ap-od.org/wp-json/wp/v2/posts?_embed"
       );
-      const json = await response.json();
-      console.log(json);
+      const json = await response.json();     
       setPosts(json);
+      setPostsLoading(false);
     };
     getPosts();
     getEvents();
@@ -159,6 +161,7 @@ export default function HomeScreen() {
           </View>
          
           <View style={styles.eventsSwiper}>
+            {eventsLoading && <Text>Loading...</Text>}
             {events.length > 0 && (
               <SwiperFlatList
                 autoplay
@@ -247,6 +250,7 @@ export default function HomeScreen() {
           </View>
           <View>
             <View style={styles.eventsSwiper}>
+              {postsLoading && <Text>Loading...</Text>}
               {posts.length > 0 && (
                 <SwiperFlatList
                   autoplay
@@ -338,7 +342,11 @@ export default function HomeScreen() {
             </Button>
             <Button
               mode="contained"
-              onPress={() => alert("Sign Up Now Pressed")}
+              onPress={() => {
+                authorize({
+                  additionalParameters: { ui_locales: "en-US,es-ES" },
+                });
+              }}
               style={styles.signUpButton}
             >
               Sign Up Now
@@ -466,3 +474,4 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 });
+ 
