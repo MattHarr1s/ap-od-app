@@ -1,18 +1,19 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Text } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { BottomNavigation, Text, Appbar } from "react-native-paper";
+import { SplashScreen, Stack, Tabs } from "expo-router";
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
-import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
 } from "react-native-paper";
-import { Appbar } from "react-native-paper";
-import { router } from "expo-router";
-import { Auth0Provider } from "react-native-auth0";
-
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Auth0Provider } from "react-native-auth0";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+
+import { MaterialBottomTabs } from "../components/layouts/material-bottom-tabs";
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -20,7 +21,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "home",
+  initialRouteName: "index",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -60,57 +61,159 @@ function RootLayoutNav() {
     >
       <PaperProvider theme={DefaultTheme}>
         <SafeAreaProvider>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="events"
+          <Tabs safeAreaInsets={{ left:2, right:2}} screenOptions={{}}>
+            <Tabs.Screen
+              name="index"
+            
               options={{
-                headerShown: true,
-                title: "EVENTS",
-                headerRight(props) {
+                tabBarLabel: "Home",
+                title: "Home",
+               
+                tabBarIcon(props) {
                   return (
-                    <Appbar.Action
-                      icon="tune-variant"
-                      onPress={() => {
-                        alert("Filter");
-                      }}
+                    <MaterialCommunityIcons
+                      color={props.color}
+                      size={24}
+                      name={
+                        props.focused
+                          ? "home-circle"
+                          : "home-circle-outline"
+                      }
                     />
                   );
                 },
               }}
             />
-            <Stack.Screen
+            <Tabs.Screen
+              name="events"
+              options={{
+                tabBarLabel: "Events",
+                tabBarIcon(props) {
+                  return (
+                    <MaterialCommunityIcons
+                      color={props.color}
+                      size={24}
+                      name={
+                        props.focused
+                          ? "calendar-month"
+                          : "calendar-month-outline"
+                      }
+                    />
+                  );
+                },
+              }}
+            />
+            <Tabs.Screen
               name="news"
-              options={{ headerShown: true, title: "NEWS" }}
+              options={{
+                tabBarLabel: "Resources",
+                tabBarIcon(props) {
+                  return (
+                    <MaterialCommunityIcons
+                      color={props.color}
+                      size={24}
+                      name={
+                        props.focused
+                          ? "newspaper-variant"
+                          : "newspaper-variant-outline"
+                      }
+                    />
+                  );
+                },
+              }}
             />
-            <Stack.Screen
-              name="profile"
-              options={{ headerShown: true, title: "PROFILE" }}
+            <Tabs.Screen
+              name="event/[slug]"
+              options={{ headerShown: true, title: "Event", href: null }}
             />
-            <Stack.Screen
+            <Tabs.Screen
+              name="story/[slug]"
+              options={{ headerShown: true, title: "News", href: null }}
+            />
+                <Tabs.Screen
               name="rewards"
               options={{ headerShown: true, title: "MEMBER REWARDS" }}
             />
-            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-          </Stack>
-          <Appbar style={styles.appBar}>
-            <Appbar.Action
-              icon="account"
-              onPress={() => {
-                router.push("/profile");
+            {/* <Tabs.Screen
+              name="news"
+              options={{ headerShown: true, title: "RESOURCES" }}
+            /> */}
+            <Tabs.Screen
+              name="profile"
+              options={{
+                headerShown: true,
+                title: "PROFILE",              
+                tabBarIcon(props) {
+                  return (
+                    <MaterialCommunityIcons
+                      color={props.color}
+                      size={24}
+                      name={
+                        props.focused
+                          ? "account-circle"
+                          : "account-circle-outline"
+                      }
+                    />
+                  );
+                },
               }}
             />
-          </Appbar>
+        
+            <Tabs.Screen
+              name="modal"
+              options={{ presentation: "modal", href: null }}
+            />
+            <Tabs.Screen
+              name="[...missing]"
+              options={{ title: "Not Found", href: null }}
+            />
+          </Tabs>
+          {/* <BottomNavigation
+            navigationState={{ index, routes }}
+            onIndexChange={setIndex}
+            renderScene={renderScene}
+            barStyle={styles.bottomNav}
+          /> */}
         </SafeAreaProvider>
       </PaperProvider>
     </Auth0Provider>
   );
 }
 
+// Define your route components
+//using the correct method to navigate using expo router
+
+// function HomeRoute() {
+//   const router = useRouter();
+//   useEffect(() => {
+//     router.push('/');
+//   }, []);
+//   return null;
+// }
+
+// function EventsRoute() {
+//   const router = useRouter();
+//   useEffect(() => {
+//     router.push('/events');
+//   }, []);
+//   return null;
+// }
+
+// function NewsRoute() {
+//   return <Text>News</Text>;
+// }
+
+// function RewardsRoute() {
+//   return <Text>Rewards</Text>;
+// }
+
+// function ProfileRoute() {
+//   return <Text>Profile</Text>;
+// }
+
 const styles = {
-  appBar: {
+  bottomNav: {
     backgroundColor: "#ffffff",
     color: "#000000",
-    justifyContent: "flex-end",
   },
 };
