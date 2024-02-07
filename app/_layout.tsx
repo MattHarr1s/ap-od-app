@@ -12,7 +12,6 @@ import { Auth0Provider } from "react-native-auth0";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-import { MaterialBottomTabs } from "../components/layouts/material-bottom-tabs";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -61,31 +60,10 @@ function RootLayoutNav() {
     >
       <PaperProvider theme={DefaultTheme}>
         <SafeAreaProvider>
-          <Tabs safeAreaInsets={{ left:2, right:2}} screenOptions={{}}>
+          <Tabs safeAreaInsets={{ left: 2, right: 2 }} screenOptions={{}}>
+    
             <Tabs.Screen
-              name="index"
-            
-              options={{
-                tabBarLabel: "Home",
-                title: "Home",
-               
-                tabBarIcon(props) {
-                  return (
-                    <MaterialCommunityIcons
-                      color={props.color}
-                      size={24}
-                      name={
-                        props.focused
-                          ? "home-circle"
-                          : "home-circle-outline"
-                      }
-                    />
-                  );
-                },
-              }}
-            />
-            <Tabs.Screen
-              name="events"
+              name="(events)"
               options={{
                 tabBarLabel: "Events",
                 tabBarIcon(props) {
@@ -104,7 +82,7 @@ function RootLayoutNav() {
               }}
             />
             <Tabs.Screen
-              name="news"
+              name="(resources)"
               options={{
                 tabBarLabel: "Resources",
                 tabBarIcon(props) {
@@ -123,26 +101,10 @@ function RootLayoutNav() {
               }}
             />
             <Tabs.Screen
-              name="event/[slug]"
-              options={{ headerShown: true, title: "Event", href: null }}
-            />
-            <Tabs.Screen
-              name="story/[slug]"
-              options={{ headerShown: true, title: "News", href: null }}
-            />
-                <Tabs.Screen
-              name="rewards"
-              options={{ headerShown: true, title: "MEMBER REWARDS" }}
-            />
-            {/* <Tabs.Screen
-              name="news"
-              options={{ headerShown: true, title: "RESOURCES" }}
-            /> */}
-            <Tabs.Screen
               name="profile"
               options={{
                 headerShown: true,
-                title: "PROFILE",              
+                title: "PROFILE",
                 tabBarIcon(props) {
                   return (
                     <MaterialCommunityIcons
@@ -158,7 +120,43 @@ function RootLayoutNav() {
                 },
               }}
             />
-        
+                    <Tabs.Screen
+              name="index"
+              options={{
+                tabBarLabel: "Home",
+                title: "Home",
+                headerShown: false,
+                tabBarIcon(props) {
+                  return (
+                    <MaterialCommunityIcons
+                      color={props.color}
+                      size={24}
+                      name={
+                        props.focused ? "home-circle" : "home-circle-outline"
+                      }
+                    />
+                  );
+                },
+              }}
+            />
+
+            {/* <Tabs.Screen
+              name="event/[slug]"
+              options={{ headerShown: true, title: "Event", href: null }}
+            />
+            <Tabs.Screen
+              name="story/[slug]"
+              options={{ headerShown: true, title: "News", href: null }}
+            /> */}
+            <Tabs.Screen
+              name="rewards"
+              options={{ headerShown: true, title: "MEMBER REWARDS" }}
+            />
+            {/* <Tabs.Screen
+              name="news"
+              options={{ headerShown: true, title: "RESOURCES" }}
+            /> */}
+
             <Tabs.Screen
               name="modal"
               options={{ presentation: "modal", href: null }}

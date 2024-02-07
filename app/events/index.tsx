@@ -12,6 +12,7 @@ import {
 import { Card, Surface, Button } from "react-native-paper";
 import * as SplashScreen from "expo-splash-screen";
 import { Link } from "expo-router";
+SplashScreen.preventAutoHideAsync();
 
 const { width, height } = Dimensions.get("window");
 
@@ -48,7 +49,7 @@ const EventItem = memo(({ item }: { item: Event }) => (
       <Card.Title title={item.title} subtitle={item.date} />
       <Card.Content>{/* Content here */}</Card.Content>
       <Card.Actions>
-        <Link href={`/event/${item.slug}`} asChild>
+        <Link href={`/events/${item.slug}`} asChild>
           <Button>View Event</Button>
         </Link>
       </Card.Actions>

@@ -51,7 +51,7 @@ const newsItems = [
   },
 ];
 
-export default function NewsScreen() {
+export default function ResourcesScreen() {
   return (
     <View style={styles.container}>     
       <FlatList

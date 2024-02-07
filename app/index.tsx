@@ -204,7 +204,7 @@ export default function HomeScreen() {
                         {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
                       </Card.Content>
                       <Card.Actions>
-                        <Link href={`/event/${item.slug}`} asChild>
+                        <Link href={`/events/${item.slug}`} asChild>
                           <Button>View Event</Button>
                         </Link>
                       </Card.Actions>
@@ -219,19 +219,7 @@ export default function HomeScreen() {
               <Button mode="contained">All Events</Button>
             </Link>
           </View>
-        </Surface>
-        <Surface style={styles.surface} elevation={3}>
-          <View>
-            <Text style={styles.title}>Categories</Text>
-            <View style={styles.chipContainer}>
-              {categories.map((category) => (
-                <Chip key={category.id} style={styles.chip}>
-                  {category.title}
-                </Chip>
-              ))}
-            </View>
-          </View>
-        </Surface>
+        </Surface>        
         <Divider />
         <Surface style={styles.surface} elevation={3}>
           <View
@@ -246,7 +234,7 @@ export default function HomeScreen() {
               variant="headlineLarge"
               style={{ fontSize: 30, fontWeight: "bold", marginTop: 5 }}
             >
-              Featured News
+              Featured Resources
             </Text>
           </View>
           <View>

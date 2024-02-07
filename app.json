@@ -25,19 +25,11 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
+     },
+
     "plugins": [
-     
+      "expo-router",
       [
-        "expo-router",{
-          "origin": "https://acme.com",
-          "asyncRoutes": "development"
-        },
         "react-native-auth0",
         {
           "domain": "dev-v4w65pck0ernl172.us.auth0.com"
