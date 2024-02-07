@@ -9,7 +9,7 @@ import { Chip, Card, Divider, Text } from "react-native-paper";
 import { Surface } from "react-native-paper";
 import { ImageBackground, View } from "react-native";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
-
+import RenderHTML from "react-native-render-html";
 import { useAuth0 } from "react-native-auth0";
 import { ScrollView } from "react-native-gesture-handler";
 const logo = require("../assets/images/ap_logo_left_v2.png");
@@ -103,7 +103,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const getEvents = async () => {
       const response = await fetch(
-        "https://staging.ap-od.org/wp-json/tribe/events/v1/events?per_page=4&categories=147"
+        "https://staging.ap-od.org/wp-json/tribe/events/v1/events?_embed&per_page=4&categories=147"
       );
       const json = await response.json();
 
@@ -146,59 +146,65 @@ export default function HomeScreen() {
             {eventsLoading ? (
               <ActivityIndicator animating={true} />
             ) : (
-              <SwiperFlatList
-                autoplay
-                autoplayDelay={6}
-                autoplayLoop
-                index={0}
-                data={events}
-                paginationActiveColor="#FF6347"
-                paginationDefaultColor="gray"
-                paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
-                paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
-                snapToAlignment="center" // Items snap to center
-                snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
-                decelerationRate="fast"
-                renderItem={({ item }) => (
-                  <Surface
-                    key={item.id}
-                    style={styles.eventSurface}
-                    elevation={3}
-                  >
-                    <Card style={styles.eventCard}>
-                      <Card.Cover
-                        source={{ uri: item.image.url }}
-                        resizeMode="contain"
-                      />
-                      <Card.Title
-                        title={item.title}
-                        subtitle={
-                          item.start_date_details.month +
-                          " " +
-                          item.start_date_details.day +
-                          ", " +
-                          item.start_date_details.year
-                        }
-                      />
-                      <Card.Content>
-                        {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
-                      </Card.Content>
-                      <Card.Actions>
-                        <Link href={`/events/${item.slug}`} asChild>
-                          <Button>View Event</Button>
-                        </Link>
-                      </Card.Actions>
-                    </Card>
-                  </Surface>
-                )}
-              />
+              <>
+                <SwiperFlatList
+                  autoplay
+                  autoplayDelay={6}
+                  autoplayLoop
+                  index={0}
+                  data={events}
+                  paginationActiveColor="#FF6347"
+                  paginationDefaultColor="gray"
+                  paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+                  paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+                  snapToAlignment="center" // Items snap to center
+                  snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+                  decelerationRate="fast"
+                  renderItem={({ item }) => (
+                    <Surface
+                      key={item.id}
+                      style={styles.eventSurface}
+                      elevation={3}
+                    >
+                      <Card style={styles.eventCard}>
+                        <Card.Cover
+                          source={{ uri: item.image.url }}
+                          resizeMode="contain"
+                        />
+                        <Card.Title
+                          title={
+                            <RenderHTML
+                              source={{ html: item.title }}
+                              contentWidth={width * 0.8 - 2 * 10}
+                            />
+                          }
+                          subtitle={
+                            item.start_date_details.month +
+                            "-" +
+                            item.start_date_details.day +
+                            "-" +
+                            item.start_date_details.year
+                          }
+                        />
+                        <Card.Content>
+                          {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
+                        </Card.Content>
+                        <Card.Actions>
+                          <Link href={`/events/${item.slug}`} asChild>
+                            <Button>View Event</Button>
+                          </Link>
+                        </Card.Actions>
+                      </Card>
+                    </Surface>
+                  )}
+                />
+                <Link href="/events/" asChild>
+                  <Button mode="contained">All Events</Button>
+                </Link>
+              </>
             )}
           </View>
-          <View style={styles.buttonsContainer}>
-            <Link href="/events" asChild>
-              <Button mode="contained">All Events</Button>
-            </Link>
-          </View>
+          <View style={styles.buttonsContainer}></View>
         </Surface>
         <Divider />
         <Surface style={styles.surface} elevation={3}>
@@ -258,7 +264,12 @@ export default function HomeScreen() {
                             resizeMode="contain"
                           />
                           <Card.Title
-                            title={item.title.rendered}
+                            title={
+                              <RenderHTML
+                                source={{ html: item.title.rendered }}
+                                contentWidth={width * 0.8 - 2 * 10}
+                              />
+                            }
                             subtitle={item.date}
                           />
                           <Card.Content>
@@ -338,6 +349,7 @@ export default function HomeScreen() {
     </View>
   );
 }
+10;
 
 const styles = StyleSheet.create({
   container: {
@@ -378,6 +390,8 @@ const styles = StyleSheet.create({
     width: "100%", // Full width
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "column",
+    paddingBottom: 16,
   },
   eventSurface: {
     width: width * 0.8, // Use 80% of the screen width for card
@@ -411,15 +425,15 @@ const styles = StyleSheet.create({
   surfaceWrap: {
     overflow: "hidden",
     borderRadius: 15,
-    margin: 10,
-    padding: 10,
+    margin: 6,
+    padding: 5,
     backgroundColor: "#fff",
   },
   surface: {
     borderRadius: 15, // Adjust for desired roundness
 
     elevation: 3, // Adjust for desired shadow depth
-    margin: 10, // Spacing from the surrounding elements
+    margin: 5, // Spacing from the surrounding elements
     backgroundColor: "#fff", // Adjust background color as needed
   },
   headerContainer: {
@@ -449,7 +463,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginTop: 0,
-    marginBottom: 20,
+    marginBottom: 4,
   },
   rewardsButtonsContainer: {
     flexDirection: "row",

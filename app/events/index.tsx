@@ -45,8 +45,8 @@ const keyExtractor = (item: Event) => item.id.toString();
 const EventItem = memo(({ item }: { item: Event }) => (
   <Surface key={item.id} style={styles.eventSurface} elevation={3}>
     <Card style={styles.eventCard}>
-      <Card.Cover source={{ uri: item.image.url }} resizeMode="contain" />
-      <Card.Title title={item.title} subtitle={item.date} />
+      <Card.Cover source={{ uri: item.image.url }} resizeMode="center" />
+      <Card.Title title={item.title.toString()} subtitle={item.date} />
       <Card.Content>{/* Content here */}</Card.Content>
       <Card.Actions>
         <Link href={`/events/${item.slug}`} asChild>
@@ -135,9 +135,10 @@ const styles = StyleSheet.create({
     fontColor: "#000000",
   },
   eventSurface: {
-    width: width * 0.8, // Use 80% of the screen width for card
+    width: width * 0.9, // Use 80% of the screen width for card
     height: height * 0.4, // Use 40% of the screen height for card
     justifyContent: "center",
+    borderRadius: 15, // Adjust for desired roundness
     alignItems: "center",
     marginHorizontal: 10, // Margin on both sides of the card
     marginBottom: 20, // Margin at the bottom of the card

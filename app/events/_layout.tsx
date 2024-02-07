@@ -10,25 +10,10 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function EventsLayout(){
-  const [news, setNews] = useState([]);
   
 
 
-  useEffect(() => {
-    
-    const getEvents = async () => {
-      const response = await fetch('https://ap-od.org/wp-json/tribe/events/v1/events');
-      const json = await response.json();
-      setNews(json);
-    }
-    
-    getEvents();
-  }, []);
-  useEffect(() => {
-    if(news.length > 0){
-      SplashScreen.hideAsync();
-    }
-  }, [news]);
+  
 
   return <EventsLayoutNav/>
 

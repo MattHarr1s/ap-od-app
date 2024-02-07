@@ -97,7 +97,13 @@ export default function EventScreen() {
 
   return (
     <View style={styles.container}>
+      <Text><RenderHTML
+      source={{html: event.title}}
+      contentWidth={availableWidth - 2 * HZ_MARGIN}
+      />
+      </Text>
       <Image source={{ uri: event.image.url }} style={styles.image} />
+      
       <Text
         variant="labelSmall"
         style={styles.label}
