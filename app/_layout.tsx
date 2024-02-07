@@ -74,9 +74,8 @@ function RootLayoutNav() {
           >
             <Tabs.Screen
               name="index"
-              options={{
-                tabBarLabel: "Home",
-                title: "Home",
+              options={{               
+                title: "HOME",
                 headerShown: false,
                 tabBarIcon(props) {
                   return (
@@ -91,7 +90,6 @@ function RootLayoutNav() {
                 },
               }}
             />
-
             {/* <Tabs.Screen
               name="event/[slug]"
               options={{ headerShown: true, title: "Event", href: null }}

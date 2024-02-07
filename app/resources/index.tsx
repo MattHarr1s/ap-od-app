@@ -51,11 +51,28 @@ const newsItems = [
   },
 ];
 
-export default function ResourcesScreen() {
+export default function ResourcesScreen({news}) {
   return (
     <View style={styles.container}>     
-      <FlatList
-        data={newsItems}
+    {news.map((item) => ( 
+      <Link href={`/news/${item.slug}`}>
+        <Card style={{ backgroundColor: "#fff" }}>
+          <Card.Content style={{ flexDirection: "row" }}>
+            <Image
+              source={{ uri: item.image.url }}
+              style={{ width: "30%", height: "100%" }}
+            />
+            <View style={styles.detailsBox}>
+              <Text variant="labelSmall">{item.title}</Text>
+              <Text variant="titleSmall">{item.excerpt}</Text>                  
+            </View>
+          </Card.Content>
+        </Card>
+      </Link>
+    ))}
+
+      {/* <FlatList
+        data={news}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Link href={`/news/${item.slug}`}>
@@ -73,7 +90,7 @@ export default function ResourcesScreen() {
             </Card>
           </Link>
         )}
-      />
+      /> */}
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>

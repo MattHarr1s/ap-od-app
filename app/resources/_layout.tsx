@@ -17,7 +17,7 @@ export default function NewsLayout(){
   useEffect(() => {
     
     const getResources = async () => {
-      const response = await fetch('https://ap-od.org/wp-json/tribe/events/v1/events');
+      const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=5');
       const json = await response.json();
       setNews(json);
     }
@@ -30,16 +30,16 @@ export default function NewsLayout(){
     }
   }, [news]);
 
-  return <NewsLayoutNav/>
+  return <NewsLayoutNav news={news}/>
 
 
 }
 
 
-function NewsLayoutNav(){
+function NewsLayoutNav({news}){
   return (
-    <Stack initialRouteName="index">
-      <Stack.Screen name="index" />
+    <Stack initialRouteName="index" >
+      <Stack.Screen name="index" news={news} />
       <Stack.Screen name="[slug]"/>
     </Stack>
 

@@ -3,7 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, Image, Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useTheme } from "react-native-paper";
-import { Link } from "expo-router";
+import { Link, SplashScreen } from "expo-router";
 import { Button } from "react-native-paper";
 import { Chip, Card, Divider, Text } from "react-native-paper";
 import { Surface } from "react-native-paper";
@@ -66,28 +66,6 @@ type Post = {
   };
 };
 
-const categories = [
-  {
-    id: 1,
-    title: "News",
-    image: "https://picsum.photos/700",
-  },
-  {
-    id: 2,
-    title: "Events",
-    image: "https://picsum.photos/700",
-  },
-  {
-    id: 3,
-    title: "Resources",
-    image: "https://picsum.photos/700",
-  },
-  {
-    id: 4,
-    title: "Volunteer",
-    image: "https://picsum.photos/700",
-  },
-];
 const rewardsItems = [
   {
     id: 1,
@@ -111,9 +89,11 @@ const rewardsItems = [
   },
 ];
 
+SplashScreen.preventAutoHideAsync();
+
 export default function HomeScreen() {
-  const { authorize, clearSession, user, error, getCredentials, isLoading } =
-    useAuth0();
+  // const { authorize, clearSession, user, error, getCredentials, isLoading } =
+  //   useAuth0();
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
@@ -134,7 +114,7 @@ export default function HomeScreen() {
     //create function to get posts from wordpress rest api using fetch and https://staging.ap-od.org/wp-json/wp/v2/posts/
     const getPosts = async () => {
       const response = await fetch(
-        "https://staging.ap-od.org/wp-json/wp/v2/posts?_embed"
+        "https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=5"
       );
       const json = await response.json();
       setPosts(json);
@@ -219,7 +199,7 @@ export default function HomeScreen() {
               <Button mode="contained">All Events</Button>
             </Link>
           </View>
-        </Surface>        
+        </Surface>
         <Divider />
         <Surface style={styles.surface} elevation={3}>
           <View
@@ -232,7 +212,12 @@ export default function HomeScreen() {
           >
             <Text
               variant="headlineLarge"
-              style={{ fontSize: 30, fontWeight: "bold", marginTop: 5 }}
+              style={{
+                fontSize: 26,
+                fontWeight: "bold",
+                marginTop: 5,
+                marginLeft: 3,
+              }}
             >
               Featured Resources
             </Text>
@@ -257,36 +242,35 @@ export default function HomeScreen() {
                   decelerationRate="fast"
                   renderItem={({ item }) => (
                     <View style={styles.surfaceWrap} key={item.id}>
-                    <Surface                      
-                      style={styles.eventSurface}
-                      elevation={3}
-                    >
-                      <Card style={styles.eventCard}>
-                        <Card.Cover
-                          source={{
-                            uri:
-                              item._embedded &&
-                              item._embedded["wp:featuredmedia"] &&
-                              item._embedded["wp:featuredmedia"][0] &&
-                              item._embedded["wp:featuredmedia"][0].source_url
-                                ? item._embedded["wp:featuredmedia"][0]
-                                    .source_url
-                                : "", // Provide a default image URL here
-                          }}
-                          resizeMode="contain"
-                        />
-                        <Card.Title
-                          title={item.title.rendered}
-                          subtitle={item.date}
-                        />
-                        <Card.Content>
-                          {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
-                        </Card.Content>
-                        <Card.Actions>
-                          <Button>View Post</Button>
-                        </Card.Actions>
-                      </Card>
-                    </Surface>
+                      <Surface style={styles.eventSurface} elevation={3}>
+                        <Card style={styles.eventCard}>
+                          <Card.Cover
+                            source={{
+                              uri:
+                                item._embedded &&
+                                item._embedded["wp:featuredmedia"] &&
+                                item._embedded["wp:featuredmedia"][0] &&
+                                item._embedded["wp:featuredmedia"][0].source_url
+                                  ? item._embedded["wp:featuredmedia"][0]
+                                      .source_url
+                                  : "https://staging.ap-od.org/wp-content/uploads/2023/05/AP_logo_left_v2.png", // Provide a default image URL here
+                            }}
+                            resizeMode="contain"
+                          />
+                          <Card.Title
+                            title={item.title.rendered}
+                            subtitle={item.date}
+                          />
+                          <Card.Content>
+                            {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
+                          </Card.Content>
+                          <Card.Actions>
+                            <Link href={`/resources/${item.slug}`} asChild>
+                              <Button>View Resource</Button>
+                            </Link>
+                          </Card.Actions>
+                        </Card>
+                      </Surface>
                     </View>
                   )}
                 />
@@ -296,55 +280,58 @@ export default function HomeScreen() {
         </Surface>
         <Divider />
         <View style={styles.surfaceWrap}>
-        <Surface style={styles.rewardsSurface} elevation={3}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Member Rewards</Text>
-          </View>
-          <View style={styles.chipContainer}>
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-              Become a member today and enjoy these rewards and more!
-            </Text>
-          </View>
-          <SwiperFlatList
-            autoplay
-            autoplayDelay={5}
-            autoplayLoop
-            index={0}
-            data={rewardsItems}
-            paginationActiveColor="#FF6347"
-            paginationDefaultColor="gray"
-            paginationStyleItem={{ width: 8, height: 8 }}
-            snapToAlignment="center"
-            snapToInterval={width * 0.8 + 10 * 2}
-            decelerationRate="fast"
-            renderItem={({ item }) => (
-              <Card key={item.id} style={styles.rewardCard}>
-                <Card.Cover source={{ uri: item.image }} resizeMode="contain" />
-                <Card.Title title={item.title} />
-              </Card>
-            )}
-          />
+          <Surface style={styles.rewardsSurface} elevation={3}>
+            <View style={styles.headerContainer}>
+              <Text style={styles.headerText}>Member Rewards</Text>
+            </View>
+            <View style={styles.chipContainer}>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                Become a member today and enjoy these rewards and more!
+              </Text>
+            </View>
+            <SwiperFlatList
+              autoplay
+              autoplayDelay={5}
+              autoplayLoop
+              index={0}
+              data={rewardsItems}
+              paginationActiveColor="#FF6347"
+              paginationDefaultColor="gray"
+              paginationStyleItem={{ width: 8, height: 8 }}
+              snapToAlignment="center"
+              snapToInterval={width * 0.8 + 10 * 2}
+              decelerationRate="fast"
+              renderItem={({ item }) => (
+                <Card key={item.id} style={styles.rewardCard}>
+                  <Card.Cover
+                    source={{ uri: item.image }}
+                    resizeMode="contain"
+                  />
+                  <Card.Title title={item.title} />
+                </Card>
+              )}
+            />
 
-          <View style={styles.rewardsButtonsContainer}>
-            <Button
-              mode="contained"
-              onPress={() => alert("Learn More Pressed")}
-            >
-              Learn More
-            </Button>
-            <Button
-              mode="contained"
-              onPress={() => {
-                authorize({
-                  additionalParameters: { ui_locales: "en-US,es-ES" },
-                });
-              }}
-              style={styles.signUpButton}
-            >
-              Sign Up Now
-            </Button>
-          </View>
-        </Surface>
+            <View style={styles.rewardsButtonsContainer}>
+              <Button
+                mode="contained"
+                onPress={() => alert("Learn More Pressed")}
+              >
+                Learn More
+              </Button>
+              <Button
+                mode="contained"
+                onPress={() => {
+                  authorize({
+                    additionalParameters: { ui_locales: "en-US,es-ES" },
+                  });
+                }}
+                style={styles.signUpButton}
+              >
+                Sign Up Now
+              </Button>
+            </View>
+          </Surface>
         </View>
       </ScrollView>
       <StatusBar style={Platform.OS === "ios" ? "light" : "dark"} />
@@ -386,7 +373,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   eventsSwiper: {
-    marginTop: 20,
+    marginTop: 10,
     height: height * 0.5, // Adjust this value if needed
     width: "100%", // Full width
     justifyContent: "center",
@@ -430,7 +417,7 @@ const styles = StyleSheet.create({
   },
   surface: {
     borderRadius: 15, // Adjust for desired roundness
-    
+
     elevation: 3, // Adjust for desired shadow depth
     margin: 10, // Spacing from the surrounding elements
     backgroundColor: "#fff", // Adjust background color as needed
@@ -448,7 +435,7 @@ const styles = StyleSheet.create({
   },
   rewardsSurface: {
     borderRadius: 15,
-    
+
     margin: 10,
     padding: 10,
     backgroundColor: "#fff",
