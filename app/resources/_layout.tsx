@@ -16,13 +16,13 @@ export default function NewsLayout(){
 
   useEffect(() => {
     
-    const getEvents = async () => {
+    const getResources = async () => {
       const response = await fetch('https://ap-od.org/wp-json/tribe/events/v1/events');
       const json = await response.json();
       setNews(json);
     }
     
-    getEvents();
+    getResources();
   }, []);
   useEffect(() => {
     if(news.length > 0){
