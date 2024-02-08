@@ -20,10 +20,12 @@ function EventsLayoutNav() {
         options={{
           // https://reactnavigation.org/docs/headers#setting-the-header-title
 
-          headerShown: false, // https://reactnavigation.org/docs/headers#adjusting-header-styles
+          headerShown: false,
+          title: "Events",
+       // https://reactnavigation.org/docs/headers#adjusting-header-styles
         }}
       />
-      <Stack.Screen name="[slug]" options={{ headerShown: false }} />
+      <Stack.Screen name="[slug]" options={{ headerShown: true }} />
     </Stack>
   );
 }

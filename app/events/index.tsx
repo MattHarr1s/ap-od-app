@@ -8,11 +8,8 @@ import {
   Dimensions,
   View,  
 } from "react-native";
-
 import * as SplashScreen from "expo-splash-screen";
-import { Link } from "expo-router";
 import CardSurface from "../../components/CardSurface";
-import FeaturedSurface from "../../components/FeaturedSurface";
 import EventCard from "../../components/EventCard";
 import { Event } from "../../types/types";
 import { transformEvents } from "../../utils/transformers";
@@ -26,7 +23,7 @@ const keyExtractor = (item: Event) => item.id.toString();
 
 const EventItem = memo(({ item }: { item: Event }) => (
   <CardSurface key={item.id} width={width+ 20} height={height + 20}>
-    <EventCard event={item} />
+    <EventCard event={item} isSingle={false} />
   </CardSurface>
 ));
 
@@ -43,7 +40,7 @@ export default function EventsScreen() {
     const getEvents = async () => {
       try {
         const response = await fetch(
-          "https://staging.ap-od.org/wp-json/tribe/events/v1/events"
+          "https://staging.ap-od.org/wp-json/tribe/events/v1/events?_embed&per_page=5&categories=147"
         );
         const json = await response.json();
         const events = transformEvents(json.events);
@@ -98,31 +95,7 @@ const styles = StyleSheet.create({
     height: 1,
     width: "80%",
   },
-  detailsBox: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginLeft: 10,
-    width: "80%",
-    padding: 10,
-    color: "#000000",
-    fontColor: "#000000",
-  },
-  eventSurface: {
-    width: width * 0.9, // Use 80% of the screen width for card
-    height: height * 0.4, // Use 40% of the screen height for card
-    justifyContent: "center",
-    borderRadius: 15, // Adjust for desired roundness
-    alignItems: "center",
-    marginHorizontal: 10, // Margin on both sides of the card
-    marginBottom: 20, // Margin at the bottom of the card
-  },
-  eventCard: {
-    width: "100%", // Card takes the full width of Surface
-    height: "100%", // Card takes the full height of Surface
-    justifyContent: "flex-start",
-  },
-
+  
   chipContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

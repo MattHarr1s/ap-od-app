@@ -94,7 +94,7 @@ function RootLayoutNav() {
               name="events"
               options={{
                 headerShown: true,
-                title: "EVENTS",
+                title: "EVENTS",                
                 tabBarIcon(props) {
                   return (
                     <MaterialCommunityIcons
@@ -134,7 +134,7 @@ function RootLayoutNav() {
               name="rewards"
               options={{
                 headerShown: true,
-                title: "MEMBER REWARDS",
+                title: "MEMBERS",
                 tabBarIcon(props) {
                   return (
                     <MaterialCommunityIcons

@@ -8,54 +8,13 @@ import { View, useWindowDimensions } from "react-native";
 import { Text, Card, Paragraph, ActivityIndicator } from "react-native-paper";
 import { Surface } from "react-native-paper";
 import RenderHTML from "react-native-render-html";
+import { Event } from "../../types/types";
+import { transformEvents } from "../../utils/transformers";
 import * as SplashScreen from "expo-splash-screen";
+import EventCard from "../../components/EventCard";
 SplashScreen.preventAutoHideAsync();
 
-type Event = {
-  id: number;
-  title: string;
-  slug: string;
-  date: string;
-  excerpt: string;
-  cost: string;
-  start_date: string;
-  start_date_details: {
-    year: string;
-    month: string;
-    day: string;
-  };
-  description: string;
-  end_date: string;
-  end_date_details: {
-    year: string;
-    month: string;
-    day: string;
-  };
-  image: {
-    url: string;
-  };
-  json_ld: {
-    "@context": string;
-    "@type": string;
-    name: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    location: {
-      "@type": string;
-      name: string;
-      address: {
-        "@type": string;
-        streetAddress: string;
-        addressLocality: string;
-        postalCode: string;
-        addressCountry: string;
-      };
-    };
-    image: string;
-    url: string;
-  };
-};
+
 
 const HZ_MARGIN = 10;
 
@@ -72,11 +31,13 @@ export default function EventScreen() {
         `https://ap-od.org/wp-json/tribe/events/v1/events/by-slug/${slug}`
       );
       const json = await response.json();
-      setEvent(json);
+      const event = transformEvents([json])[0];
+      setEvent(event);
       setLoading(false);
       SplashScreen.hideAsync();
     };
     if (slug) {
+      
       getEvent();
       
     }
@@ -97,32 +58,7 @@ export default function EventScreen() {
 
   return (
     <View style={styles.container}>
-      <Text><RenderHTML
-      source={{html: event.title}}
-      contentWidth={availableWidth - 2 * HZ_MARGIN}
-      />
-      </Text>
-      <Image source={{ uri: event.image.url }} style={styles.image} />
-      
-      <Text
-        variant="labelSmall"
-        style={styles.label}
-      >{`${event.start_date_details.month}/${event.start_date_details.day}/${event.start_date_details.year} - ${event.end_date_details.month}/${event.end_date_details.day}/${event.end_date_details.year}`}</Text>
-
-      <Text
-        variant="labelSmall"
-        style={styles.label}
-      >{`Cost: ${event.cost}`}</Text>
-      <ScrollView
-        style={{ width: availableWidth }}
-        contentContainerStyle={[styles.content, { width: availableWidth }]}
-      >
-        <RenderHTML
-          source={{ html: event.description }}
-          contentWidth={availableWidth - 2 * HZ_MARGIN}
-          ignoredDomTags={["form"]}
-        />
-      </ScrollView>
+     <EventCard event={event} isSingle />
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />

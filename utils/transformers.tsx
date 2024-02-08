@@ -90,9 +90,10 @@ export const transformEvents = (events: RawEvent[]): Event[] => {
 
 export const transformPosts = (posts: RawPost[]): Post[] => {
   return posts.map((post) => {
-    const decodedTitle = he.decode(post.title.rendered);
-    const decodedContent = he.decode(post.content.rendered);
-    const decodedExcerpt = he.decode(post.excerpt.rendered);
+    
+    const decodedTitle = he.decode(post?.title?.rendered);
+    const decodedContent = he.decode(post?.content?.rendered);
+    const decodedExcerpt = he.decode(post?.excerpt?.rendered);
    
 
     const sourceUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "";

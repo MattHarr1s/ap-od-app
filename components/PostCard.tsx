@@ -1,37 +1,49 @@
 // PostCard.tsx
-import React from 'react';
-import { Card, Text, Button } from 'react-native-paper';
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { Post } from '../types/types'; // Assuming you have a types file for your types
+import React from "react";
+import { Card, Text, Button } from "react-native-paper";
+import { Link } from "expo-router";
+import { StyleSheet } from "react-native";
+import { Post } from "../types/types"; // Assuming you have a types file for your types
 
 interface PostCardProps {
   post: Post;
+  isSingle: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post }) => (
+const PostCard: React.FC<PostCardProps> = ({ post, isSingle }) => {  
+  return(
   <Card style={styles.eventCard}>
     <Card.Cover
       source={{
-        uri: post.featuredMedia || "https://staging.ap-od.org/wp-content/uploads/2023/05/AP_logo_left_v2.png",
+        uri:
+          post.featuredMedia ||
+          "https://staging.ap-od.org/wp-content/uploads/2023/05/AP_logo_left_v2.png",
       }}
       resizeMode="contain"
     />
-    <Card.Title 
-    title={post.title} 
-    subtitle={post.date} />
+    <Card.Title
+      title={post.title}
+      titleNumberOfLines={2}
+      subtitle={post.date}
+    />
     <Card.Content>
-      <Text variant="bodySmall" numberOfLines={3} ellipsizeMode="tail">
+      <Text
+        variant="bodySmall"
+        numberOfLines={isSingle ? 0 : 3}
+        ellipsizeMode="tail"
+      >
         {post.excerpt}
       </Text>
     </Card.Content>
-    <Card.Actions style={styles.eventCardActions}>
-      <Link href={`/resources/${post.slug}`} asChild>
-        <Button>View Resource</Button>
-      </Link>
-    </Card.Actions>
+    {!isSingle && (
+      <Card.Actions style={styles.eventCardActions}>
+        <Link href={`/resources/${post.slug}`} asChild>
+          <Button>View Resource</Button>
+        </Link>
+      </Card.Actions>
+    )}
   </Card>
-);
+)};
 
 const styles = StyleSheet.create({
   eventCard: {

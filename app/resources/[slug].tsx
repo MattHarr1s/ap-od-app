@@ -1,47 +1,51 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, ScrollView } from 'react-native';
-import { Link } from 'expo-router';
-import { useLocalSearchParams } from 'expo-router';
+import { StatusBar } from "expo-status-bar";
+import { Platform, StyleSheet, ScrollView } from "react-native";
+import { Link } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 
-import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
+import { Post } from "../../types/types";
+import { transformPosts } from "../../utils/transformers";
+import PostCard from "../../components/PostCard";
 
-export default function NewsScreen() {
-  const {slug} = useLocalSearchParams();
+export default function ResourceScreen() {
+  const { slug } = useLocalSearchParams();
 
-  const [news, setNews] = useState([]);
-
+  const [news, setNews] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-
-    const getEvents = async () => {
-      const response = await fetch('https://ap-od.org/wp-json/tribe/events/v1/events');
-      const json = await response.json();
-      setNews(json);
+    const getPost = async () => {
+      try {
+        const response = await fetch(
+          `https://ap-od.org/wp-json/wp/v2/posts?_embedded&slug=${slug}`
+        );
+        const json = await response.json();
+        const post = transformPosts(json)[0];
+        setNews(post);
+        setLoading(false);
+      }
+      catch (error) {
+        console.error(error);
+        setLoading(false);
+      }            
+    };
+    if (slug) {
+      getPost();
     }
-    
-    getEvents();
-  }, []);
+  }, [news]);
+
+  if (loading || !news) {
+    return <ActivityIndicator animating={true} />;
+  }
 
   return (
     <View style={styles.container}>
-    <Text style={styles.title}>{slug}</Text>
-     
-      {/* {events.length > 0 &&  <ScrollView>
-        {events.map((event) => {
-          return <Link href={`/event/${event.slug}`} key={event.id}  asChild>
-          <Text style={styles.title}>{event.title}</Text>
-          <Text style={styles.title}>{event.slug}</Text>
-          <Text style={styles.title}>{event.date}</Text>
-        </Link>
-        })}
-
-      
-      </ScrollView> */}
-
-      
+      <PostCard post={news} isSingle />
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
   );
 }
@@ -49,16 +53,18 @@ export default function NewsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "flex-start",
+    margin: 20,
+    marginTop: 20,
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
 });
