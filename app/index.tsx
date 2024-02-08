@@ -9,12 +9,12 @@ import { Chip, Card, Divider, Text } from "react-native-paper";
 import { Surface } from "react-native-paper";
 import { ImageBackground, View } from "react-native";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
-import RenderHTML from "react-native-render-html";
+
 import PostCard from "../components/PostCard";
 import EventCard from "../components/EventCard";
 import FeaturedSurface from "../components/FeaturedSurface";
 import CardSurface from "../components/CardSurface";
-import he from "he";
+import { Event, Post } from "../types/types";
 import { transformEvents, transformPosts } from "../utils/transformers";
 
 import { useAuth0 } from "react-native-auth0";
@@ -23,55 +23,7 @@ const logo = require("../assets/images/ap_logo_left_v2.png");
 const purpleBackground = require("../assets/images/purple_button.png");
 const { width, height } = Dimensions.get("window");
 
-type Event = {
-  id: number;
-  title: string;
-  slug: string;
-  date: string;
-  excerpt: string;
-  cost: string;
-  start_date: string;
-  start_date_details: {
-    year: string;
-    month: string;
-    day: string;
-  };
-  end_date: string;
-  end_date_details: {
-    year: string;
-    month: string;
-    day: string;
-  };
-  image: {
-    url: string;
-  };
-  venue: {
-    address: {
-      zip: string;
-    };
-  };
-};
 
-//create a type for a post from the wordpress rest api
-type Post = {
-  id: number;
-  title: {
-    rendered: string;
-  };
-  content: {
-    rendered: string;
-  };
-  excerpt: {
-    rendered: string;
-  };
-  date: string;
-  link: string;
-  _embedded: {
-    "wp:featuredmedia": {
-      source_url: string;
-    }[];
-  };
-};
 
 const rewardsItems = [
   {
@@ -106,7 +58,7 @@ export default function HomeScreen() {
   const [eventsLoading, setEventsLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
-  // const { colors } = useTheme();
+  const { colors } = useTheme();
 
   useEffect(() => {
     const getEvents = async () => {

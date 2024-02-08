@@ -15,7 +15,7 @@ import CardSurface from "../../components/CardSurface";
 import FeaturedSurface from "../../components/FeaturedSurface";
 import EventCard from "../../components/EventCard";
 import { Event } from "../../types/types";
-
+import { transformEvents } from "../../utils/transformers";
 SplashScreen.preventAutoHideAsync();
 
 const { width, height } = Dimensions.get("window");
@@ -46,7 +46,8 @@ export default function EventsScreen() {
           "https://staging.ap-od.org/wp-json/tribe/events/v1/events"
         );
         const json = await response.json();
-        setEvents(json.events);
+        const events = transformEvents(json.events);
+        setEvents(events);
         setLoading(false);
         SplashScreen.hideAsync();
       } catch (error) {
