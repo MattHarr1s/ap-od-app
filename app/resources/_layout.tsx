@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, ScrollView } from "react-native";
 import { Link, Tabs, SplashScreen, Stack } from "expo-router";
@@ -8,41 +8,20 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 SplashScreen.preventAutoHideAsync();
 
-
-export default function NewsLayout(){
-  const [news, setNews] = useState([]);
-  
-
-
-  useEffect(() => {
-    
-    const getResources = async () => {
-      const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=5');
-      const json = await response.json();
-      setNews(json);
-    }
-    
-    getResources();
-  }, []);
-  useEffect(() => {
-    if(news.length > 0){
-      SplashScreen.hideAsync();
-    }
-  }, [news]);
-
-  return <NewsLayoutNav news={news}/>
-
-
+export default function NewsLayout() {
+  return <NewsLayoutNav />;
 }
 
-
-function NewsLayoutNav({news}){
+function NewsLayoutNav() {
   return (
-    <Stack initialRouteName="index" >
-      <Stack.Screen name="index" news={news} />
-      <Stack.Screen name="[slug]"/>
+    <Stack initialRouteName="index">
+      <Stack.Screen
+        name="index"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen name="[slug]" options={{ headerShown: false }} />
     </Stack>
-
-  )
+  );
 }
-

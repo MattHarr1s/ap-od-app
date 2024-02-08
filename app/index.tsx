@@ -10,6 +10,13 @@ import { Surface } from "react-native-paper";
 import { ImageBackground, View } from "react-native";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
 import RenderHTML from "react-native-render-html";
+import PostCard from "../components/PostCard";
+import EventCard from "../components/EventCard";
+import FeaturedSurface from "../components/FeaturedSurface";
+import CardSurface from "../components/CardSurface";
+import he from "he";
+import { transformEvents, transformPosts } from "../utils/transformers";
+
 import { useAuth0 } from "react-native-auth0";
 import { ScrollView } from "react-native-gesture-handler";
 const logo = require("../assets/images/ap_logo_left_v2.png");
@@ -91,6 +98,7 @@ const rewardsItems = [
 
 SplashScreen.preventAutoHideAsync();
 
+
 export default function HomeScreen() {
   // const { authorize, clearSession, user, error, getCredentials, isLoading } =
   //   useAuth0();
@@ -106,8 +114,8 @@ export default function HomeScreen() {
         "https://staging.ap-od.org/wp-json/tribe/events/v1/events?_embed&per_page=4&categories=147"
       );
       const json = await response.json();
-
-      setEvents(json.events);
+      const transformedEvents = transformEvents(json.events);
+      setEvents(transformedEvents);
       setEventsLoading(false);
     };
 
@@ -117,7 +125,8 @@ export default function HomeScreen() {
         "https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=5"
       );
       const json = await response.json();
-      setPosts(json);
+      const transformedPosts = transformPosts(json);
+      setPosts(transformedPosts);
       setPostsLoading(false);
     };
     getPosts();
@@ -137,158 +146,67 @@ export default function HomeScreen() {
       />
       <Divider />
       <ScrollView>
-        <Surface style={styles.surface}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Featured Events</Text>
-          </View>
-
-          <View style={styles.eventsSwiper}>
-            {eventsLoading ? (
-              <ActivityIndicator animating={true} />
-            ) : (
-              <>
-                <SwiperFlatList
-                  autoplay
-                  autoplayDelay={6}
-                  autoplayLoop
-                  index={0}
-                  data={events}
-                  paginationActiveColor="#FF6347"
-                  paginationDefaultColor="gray"
-                  paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
-                  paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
-                  snapToAlignment="center" // Items snap to center
-                  snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
-                  decelerationRate="fast"
-                  renderItem={({ item }) => (
-                    <Surface
-                      key={item.id}
-                      style={styles.eventSurface}
-                      elevation={3}
-                    >
-                      <Card style={styles.eventCard}>
-                        <Card.Cover
-                          source={{ uri: item.image.url }}
-                          resizeMode="contain"
-                        />
-                        <Card.Title
-                          title={
-                            <RenderHTML
-                              source={{ html: item.title }}
-                              contentWidth={width * 0.8 - 2 * 10}
-                            />
-                          }
-                          subtitle={
-                            item.start_date_details.month +
-                            "-" +
-                            item.start_date_details.day +
-                            "-" +
-                            item.start_date_details.year
-                          }
-                        />
-                        <Card.Content>
-                          {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
-                        </Card.Content>
-                        <Card.Actions>
-                          <Link href={`/events/${item.slug}`} asChild>
-                            <Button>View Event</Button>
-                          </Link>
-                        </Card.Actions>
-                      </Card>
-                    </Surface>
-                  )}
-                />
-                <Link href="/events/" asChild>
-                  <Button mode="contained">All Events</Button>
-                </Link>
-              </>
-            )}
-          </View>
-          <View style={styles.buttonsContainer}></View>
-        </Surface>
-        <Divider />
-        <Surface style={styles.surface} elevation={3}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "100%",
-              padding: 10,
-            }}
-          >
-            <Text
-              variant="headlineLarge"
-              style={{
-                fontSize: 26,
-                fontWeight: "bold",
-                marginTop: 5,
-                marginLeft: 3,
-              }}
-            >
-              Featured Resources
-            </Text>
-          </View>
-          <View>
-            <View style={styles.eventsSwiper}>
-              {postsLoading ? (
-                <ActivityIndicator animating={true} />
-              ) : (
-                <SwiperFlatList
-                  autoplay
-                  autoplayDelay={6}
-                  autoplayLoop
-                  index={0}
-                  data={posts}
-                  paginationActiveColor="#FF6347"
-                  paginationDefaultColor="gray"
-                  paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
-                  paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
-                  snapToAlignment="center" // Items snap to center
-                  snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
-                  decelerationRate="fast"
-                  renderItem={({ item }) => (
-                    <View style={styles.surfaceWrap} key={item.id}>
-                      <Surface style={styles.eventSurface} elevation={3}>
-                        <Card style={styles.eventCard}>
-                          <Card.Cover
-                            source={{
-                              uri:
-                                item._embedded &&
-                                item._embedded["wp:featuredmedia"] &&
-                                item._embedded["wp:featuredmedia"][0] &&
-                                item._embedded["wp:featuredmedia"][0].source_url
-                                  ? item._embedded["wp:featuredmedia"][0]
-                                      .source_url
-                                  : "https://staging.ap-od.org/wp-content/uploads/2023/05/AP_logo_left_v2.png", // Provide a default image URL here
-                            }}
-                            resizeMode="contain"
-                          />
-                          <Card.Title
-                            title={
-                              <RenderHTML
-                                source={{ html: item.title.rendered }}
-                                contentWidth={width * 0.8 - 2 * 10}
-                              />
-                            }
-                            subtitle={item.date}
-                          />
-                          <Card.Content>
-                            {/* <Text variant="labelMedium">{item?.venue?.address?.zip}</Text> */}
-                          </Card.Content>
-                          <Card.Actions>
-                            <Link href={`/resources/${item.slug}`} asChild>
-                              <Button>View Resource</Button>
-                            </Link>
-                          </Card.Actions>
-                        </Card>
-                      </Surface>
-                    </View>
-                  )}
-                />
+        <FeaturedSurface
+          headline="Featured Events"
+          height={height}
+          link="/events/"
+          linkLabel="All Events"
+        >
+          {eventsLoading ? (
+            <ActivityIndicator animating={true} />
+          ) : (
+            <SwiperFlatList
+              autoplay
+              autoplayDelay={6}
+              autoplayLoop
+              index={0}
+              data={events}
+              paginationActiveColor="#FF6347"
+              paginationDefaultColor="gray"
+              paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+              paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+              snapToAlignment="center" // Items snap to center
+              snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+              decelerationRate="fast"
+              renderItem={({ item }) => (
+                <CardSurface key={item.id} width={width} height={height}>
+                  <EventCard event={item} />
+                </CardSurface>
               )}
-            </View>
-          </View>
-        </Surface>
+            />
+          )}
+        </FeaturedSurface>
+        <Divider />
+        <FeaturedSurface
+          headline="Featured Resources"
+          height={height}
+          link="/resources/"
+          linkLabel="All Resources"
+        >
+          {postsLoading ? (
+            <ActivityIndicator animating={true} />
+          ) : (
+            <SwiperFlatList
+              autoplay
+              autoplayDelay={6}
+              autoplayLoop
+              index={0}
+              data={posts}
+              paginationActiveColor="#FF6347"
+              paginationDefaultColor="gray"
+              paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+              paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+              snapToAlignment="center" // Items snap to center
+              snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+              decelerationRate="fast"
+              renderItem={({ item }) => (
+                <CardSurface height={height} width={width} key={item.id}>
+                  <PostCard post={item} />
+                </CardSurface>
+              )}
+            />
+          )}
+        </FeaturedSurface>
         <Divider />
         <View style={styles.surfaceWrap}>
           <Surface style={styles.rewardsSurface} elevation={3}>
@@ -330,7 +248,7 @@ export default function HomeScreen() {
               >
                 Learn More
               </Button>
-              <Button
+              {/* <Button
                 mode="contained"
                 onPress={() => {
                   authorize({
@@ -340,7 +258,7 @@ export default function HomeScreen() {
                 style={styles.signUpButton}
               >
                 Sign Up Now
-              </Button>
+              </Button> */}
             </View>
           </Surface>
         </View>
@@ -395,15 +313,11 @@ const styles = StyleSheet.create({
   },
   eventSurface: {
     width: width * 0.8, // Use 80% of the screen width for card
-    height: height * 0.4, // Use 40% of the screen height for card
+    height: height * 0.42, // Use 40% of the screen height for card
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
     marginHorizontal: 10, // Margin on both sides of the card
-  },
-  eventCard: {
-    width: "100%", // Card takes the full width of Surface
-    height: "100%", // Card takes the full height of Surface
-    justifyContent: "flex-start",
   },
   title: {
     fontSize: 30,
@@ -449,7 +363,6 @@ const styles = StyleSheet.create({
   },
   rewardsSurface: {
     borderRadius: 15,
-
     margin: 10,
     padding: 10,
     backgroundColor: "#fff",

@@ -90,15 +90,6 @@ function RootLayoutNav() {
                 },
               }}
             />
-            {/* <Tabs.Screen
-              name="event/[slug]"
-              options={{ headerShown: true, title: "Event", href: null }}
-            />
-            <Tabs.Screen
-              name="story/[slug]"
-              options={{ headerShown: true, title: "News", href: null }}
-            /> */}
-
             <Tabs.Screen
               name="events"
               options={{

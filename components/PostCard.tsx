@@ -1,36 +1,40 @@
-// EventCard.tsx
+// PostCard.tsx
 import React from 'react';
 import { Card, Text, Button } from 'react-native-paper';
 import { Link } from 'expo-router';
 import { StyleSheet } from 'react-native';
-import { Event } from '../types/types'; // Assuming you have a types file for your types
+import { Post } from '../types/types'; // Assuming you have a types file for your types
 
-interface EventCardProps {
-  event: Event;
+interface PostCardProps {
+  post: Post;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event }) => (
+const PostCard: React.FC<PostCardProps> = ({ post }) => (
   <Card style={styles.eventCard}>
-    <Card.Cover source={{ uri: event.image.url }} resizeMode="contain" />
-    <Card.Title
-      title={event.title}
-      subtitle={`${event.start_date}    ${event?.venue?.address?.zip ? `| ${event.venue.address.zip}` : ""}`}
+    <Card.Cover
+      source={{
+        uri: post.featuredMedia || "https://staging.ap-od.org/wp-content/uploads/2023/05/AP_logo_left_v2.png",
+      }}
+      resizeMode="contain"
     />
+    <Card.Title 
+    title={post.title} 
+    subtitle={post.date} />
     <Card.Content>
       <Text variant="bodySmall" numberOfLines={3} ellipsizeMode="tail">
-        {event.excerpt}
+        {post.excerpt}
       </Text>
     </Card.Content>
     <Card.Actions style={styles.eventCardActions}>
-      <Link href={`/events/${event.slug}`} asChild>
-        <Button>View Event</Button>
+      <Link href={`/resources/${post.slug}`} asChild>
+        <Button>View Resource</Button>
       </Link>
     </Card.Actions>
   </Card>
 );
 
 const styles = StyleSheet.create({
-   eventCard: {
+  eventCard: {
     width: "100%", // Card takes the full width of Surface
     height: "100%", // Card takes the full height of Surface
     justifyContent: "flex-start",
@@ -45,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EventCard;
+export default PostCard;

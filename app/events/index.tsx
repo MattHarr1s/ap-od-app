@@ -6,55 +6,28 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  View,
-  Text,
+  View,  
 } from "react-native";
-import { Card, Surface, Button } from "react-native-paper";
+
 import * as SplashScreen from "expo-splash-screen";
 import { Link } from "expo-router";
+import CardSurface from "../../components/CardSurface";
+import FeaturedSurface from "../../components/FeaturedSurface";
+import EventCard from "../../components/EventCard";
+import { Event } from "../../types/types";
+
 SplashScreen.preventAutoHideAsync();
 
 const { width, height } = Dimensions.get("window");
 
-type Event = {
-  id: number;
-  title: string;
-  slug: string;
-  date: string;
-  excerpt: string;
-  cost: string;
-  start_date: string;
-  start_date_details: {
-    year: string;
-    month: string;
-    day: string;
-  };
-  end_date: string;
-  end_date_details: {
-    year: string;
-    month: string;
-    day: string;
-  };
-  image: {
-    url: string;
-  };
-};
+
 
 const keyExtractor = (item: Event) => item.id.toString();
 
 const EventItem = memo(({ item }: { item: Event }) => (
-  <Surface key={item.id} style={styles.eventSurface} elevation={3}>
-    <Card style={styles.eventCard}>
-      <Card.Cover source={{ uri: item.image.url }} resizeMode="center" />
-      <Card.Title title={item.title.toString()} subtitle={item.date} />
-      <Card.Content>{/* Content here */}</Card.Content>
-      <Card.Actions>
-        <Link href={`/events/${item.slug}`} asChild>
-          <Button>View Event</Button>
-        </Link>
-      </Card.Actions>
-    </Card>
-  </Surface>
+  <CardSurface key={item.id} width={width+ 20} height={height + 20}>
+    <EventCard event={item} />
+  </CardSurface>
 ));
 
 export default function EventsScreen() {
