@@ -74,7 +74,7 @@ function RootLayoutNav() {
           >
             <Tabs.Screen
               name="index"
-              options={{               
+              options={{
                 title: "HOME",
                 headerShown: false,
                 tabBarIcon(props) {
@@ -94,7 +94,7 @@ function RootLayoutNav() {
               name="events"
               options={{
                 headerShown: true,
-                title: "EVENTS",                
+                title: "EVENTS",
                 tabBarIcon(props) {
                   return (
                     <MaterialCommunityIcons
@@ -131,6 +131,22 @@ function RootLayoutNav() {
               }}
             />
             <Tabs.Screen
+              name="resource/[slug]"
+              options={{
+                headerShown: true,
+                title: "Resource",
+                href: null,
+              }}
+            />
+            <Tabs.Screen
+              name="event/[slug]"
+              options={{
+                headerShown: true,
+                title: "Resource",
+                href: null,
+              }}
+            />
+            <Tabs.Screen
               name="rewards"
               options={{
                 headerShown: true,
@@ -140,9 +156,7 @@ function RootLayoutNav() {
                     <MaterialCommunityIcons
                       color={props.color}
                       size={24}
-                      name={
-                        props.focused ? "wallet" : "wallet-outline"
-                      }
+                      name={props.focused ? "wallet" : "wallet-outline"}
                     />
                   );
                 },

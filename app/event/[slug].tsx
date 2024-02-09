@@ -41,7 +41,7 @@ export default function EventScreen() {
       getEvent();
       
     }
-  }, []);
+  }, [slug]);
 
   useEffect(() => {
     if (event) {
@@ -68,7 +68,7 @@ export default function EventScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
     alignItems: "center",
     justifyContent: "flex-start",
     margin: 20,

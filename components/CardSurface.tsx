@@ -17,10 +17,10 @@ const CardSurface: React.FC<CardSurfaceProps> = ({
     <Surface
       style={{
         width: width * 0.8, // Use 80% of the screen width for card
-        height: height * 0.42, // Use 40% of the screen height for card
+        height: height * 0.5, // Use 40% of the screen height for card
         justifyContent: "center",
         alignItems: "center",
-        flex: 1,
+        flex: 2,
         marginHorizontal: 10,
       }}
       elevation={3}

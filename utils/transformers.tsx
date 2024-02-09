@@ -53,6 +53,35 @@ interface RawPost {
   slug: string;
 }
 
+interface RawSinglePost {
+  id: number;
+  date: string;
+  slug: string;
+  link: string;
+  title: {
+    rendered: string;
+  };
+  content: {
+    rendered: string;
+  };
+  excerpt: {
+    rendered: string;
+  };
+  featured_media: number; // Assuming this is the ID for the featured media
+}
+
+interface TransformedPost {
+  id: number;
+  date: string;
+  slug: string;
+  link: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  featuredImage: string; // URL of the featured image
+}
+
+
 const formatDate = (date: string) => {
   const d = new Date(date);
   return d.toLocaleDateString('en-US', {
@@ -96,7 +125,7 @@ export const transformPosts = (posts: RawPost[]): Post[] => {
     const decodedExcerpt = he.decode(post?.excerpt?.rendered);
    
 
-    const sourceUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "";
+    const sourceUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || post._embedded?.["wp:featuredmedia"]?.[0]?.href || "";
 
     return {
       id: post.id,
@@ -110,3 +139,43 @@ export const transformPosts = (posts: RawPost[]): Post[] => {
     };
   });
 };
+
+
+
+async function getMediaUrlById(mediaId: number): Promise<string> {
+  const baseUrl = 'https://staging.ap-od.org'; // Replace with your WordPress site URL
+  const mediaEndpoint = `${baseUrl}/wp-json/wp/v2/media/${mediaId}`;
+
+  try {
+    const response = await fetch(mediaEndpoint);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch media: ${response.statusText}`);
+    }
+    const mediaData = await response.json();
+    return mediaData.source_url; // The URL of the media item
+  } catch (error) {
+    console.error("Error fetching media URL:", error);
+    return ''; // Return a default or empty string if the fetch fails
+  }
+}
+
+// Transformer function
+export const  transformPost = async (rawPost: RawSinglePost): Promise<TransformedPost> => {
+  
+  const featuredImageUrl = await getMediaUrlById(rawPost.featured_media);
+
+  return {
+    id: rawPost.id,
+    date: new Date(rawPost.date).toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }),
+    slug: rawPost.slug,
+    link: rawPost.link,
+    title: he.decode(rawPost?.title?.rendered),
+    content: he.decode(rawPost?.content?.rendered),
+    excerpt: he.decode(rawPost?.excerpt?.rendered?.replace(/<\/?[^>]+(>|$)/g, "")), // Remove HTML tags and decode entities
+    featuredImage: featuredImageUrl,
+  };
+}

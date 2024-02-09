@@ -1,9 +1,9 @@
 // EventCard.tsx
-import React from 'react';
-import { Card, Text, Button } from 'react-native-paper';
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { Event } from '../types/types'; 
+import React from "react";
+import { Card, Text, Button } from "react-native-paper";
+import { router } from "expo-router";
+import { StyleSheet } from "react-native";
+import { Event } from "../types/types";
 
 interface EventCardProps {
   event: Event;
@@ -14,28 +14,41 @@ const EventCard: React.FC<EventCardProps> = ({ event, isSingle }) => (
   <Card style={styles.eventCard}>
     <Card.Cover source={{ uri: event.image.url }} resizeMode="contain" />
     <Card.Title
-    titleNumberOfLines={3}
-      style={{flexWrap: 'wrap'}}
+      titleNumberOfLines={3}
+      style={{ flexWrap: "wrap" }}
       title={event.title}
-      subtitle={`${event.start_date}    ${event?.venue?.address?.zip ? `| ${event.venue.address.zip}` : ""}`}
+      subtitle={`${event.start_date}    ${
+        event?.venue?.address?.zip ? `| ${event.venue.address.zip}` : ""
+      }`}
     />
     <Card.Content>
-      <Text variant={!isSingle? 'bodySmall' : 'bodyLarge'} numberOfLines={isSingle ? 0 : 2} ellipsizeMode="tail">
+      <Text
+        variant={!isSingle ? "bodySmall" : "bodyLarge"}
+        numberOfLines={isSingle ? 0 : 2}
+        ellipsizeMode="tail"
+      >
         {event.excerpt}
       </Text>
     </Card.Content>
     {!isSingle && (
-    <Card.Actions style={styles.eventCardActions}>
-      <Link href={`/events/${event.slug}`} asChild>
-        <Button>View Event</Button>
-      </Link>
-    </Card.Actions>
+      <Card.Actions style={styles.eventCardActions}>
+        <Button
+          onPress={() => {
+            router.replace({
+              pathname: "/event/[slug]",
+              params: { slug: event.slug },
+            } as never); // Provide the correct type for the argument
+          }}
+        >
+          View Event
+        </Button>
+      </Card.Actions>
     )}
   </Card>
 );
 
 const styles = StyleSheet.create({
-   eventCard: {
+  eventCard: {
     width: "100%", // Card takes the full width of Surface
     height: "100%", // Card takes the full height of Surface
     justifyContent: "flex-start",
