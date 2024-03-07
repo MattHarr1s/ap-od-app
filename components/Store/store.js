@@ -80,8 +80,17 @@ const store = createStore({
     const response = await fetch('https://staging.ap-od.org//wp-json/wp/v2/categories?&_embed&type=post');
     
     const data = await response.json();
-    console.log(data);
-    actions.setResourceCategories(data);
+    const newData = data.filter((category) => {
+      if (category?.name?.includes('Facilitator')) {
+        return null;
+      }
+      return {
+        id: category.id,
+        name: category.name,
+        slug: category.slug
+      }
+    });
+    actions.setResourceCategories(newData);
   }
   ),
   fetchResourceTaxonomies: thunk(async (actions, payload) => {

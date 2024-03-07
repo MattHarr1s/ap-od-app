@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
-import { Text, Button, Surface, Card } from "react-native-paper";
+import { Text, Button, Surface, Card, Chip } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import { useStoreState, useStoreActions, useStoreDispatch } from "easy-peasy";
 import FeaturedHeadline from "./FeaturedHeadline";
 import FeaturedSurface from "./FeaturedSurface";
 const Onboarding = () => {
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const onboardingStep = useStoreState((state) => state.onboardingStep);
   const setOnboardingStep = useStoreActions(
     (actions) => actions.setOnboardingStep
@@ -56,26 +57,18 @@ const Onboarding = () => {
         <Surface elevation={4} style={styles.surface}>
           <Text>Step {onboardingStep}</Text>
           <Text variant="headlineLarge" style={{color: "black"}}>
-           Please Select A Few Categories That Interest You
+           Please Select A Few Categories of Resources That Interest You
           </Text>
           <Text>
             This will help us personalize the content for you and your family.
           </Text>
-          <Card>
+          <View style={styles.chipCard}>
             {resourceCategories?.map((category) => (
-              <Card.Content key={category.id}>
-                <Text>{category.name}</Text>
-                <Button
-                  mode="contained"
-                  // onPress={() => {
-                  //   dispatch.resourceCategories.selectCategory(category.id);
-                  // }}
-                >
-                  Select
-                </Button>
-              </Card.Content>
+              <Chip key={category.id} onPress={() => console.log(category)} showSelectedOverlay={true} elevated={true} compact={true}>
+                {category.name}
+              </Chip>
             ))}
-          </Card>
+          </View>
 
           
           <Button mode="contained" onPress={() => setOnboardingStep(2)}>
@@ -116,8 +109,16 @@ const styles = StyleSheet.create({
     borderRadius: 15, // Adjust for desired roundness
     elevation: 3, // Adjust for desired shadow depth
     margin: 5, // Spacing from the surrounding elements
-    width: "80%",
+    width: "95%",
     padding: 10,
     height: "auto",
   },
+  chipCard: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',   
+    paddingHorizontal: 12,   
+  },
+  chip:{    
+    margin: 6,
+  }
 });
