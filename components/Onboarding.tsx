@@ -64,7 +64,7 @@ const Onboarding = () => {
           </Text>
           <View style={styles.chipCard}>
             {resourceCategories?.map((category) => (
-              <Chip key={category.id} onPress={() => console.log(category)} showSelectedOverlay={true} elevated={true} compact={true}>
+              <Chip key={category.id} onPress={() => console.log(category)} showSelectedOverlay={true} elevated={true} compact={true} style={styles.chip}>
                 {category.name}
               </Chip>
             ))}
