@@ -5,12 +5,12 @@ import { FlatList, Platform, StyleSheet, Dimensions } from "react-native";
 import { Link } from "expo-router";
 import { View } from "react-native";
 import { Text, Card } from "react-native-paper";
-import PostCard from "../components/PostCard";
-import { Post } from "../types/types";
+import PostCard from "../../components/PostCard";
+import { Post } from "../../types/types";
 
 
-import CardSurface from "../components/CardSurface";
-import { transformPosts } from "../utils/transformers";
+import CardSurface from "../../components/CardSurface";
+import { transformPosts } from "../../utils/transformers";
 
 
 const { width, height } = Dimensions.get("window");

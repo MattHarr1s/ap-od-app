@@ -5,8 +5,8 @@ import { Button } from "react-native-paper";
 import { useAuth0 } from "react-native-auth0";
 import { List, Text } from "react-native-paper";
 import { View } from "react-native";
-import LoginForm from "../../components/forms/LoginForm";
-import ProfileForm from "../../components/forms/ProfileForm";
+import LoginForm from "../../../components/forms/LoginForm";
+import ProfileForm from "../../../components/forms/ProfileForm";
 const ProfileScreen = () => {
   const { authorize, clearSession, user, error, getCredentials, isLoading } =
     useAuth0();

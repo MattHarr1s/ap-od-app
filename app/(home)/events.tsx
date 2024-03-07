@@ -9,10 +9,10 @@ import {
   View,  
 } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
-import CardSurface from "../components/CardSurface";
-import EventCard from "../components/EventCard";
-import { Event } from "../types/types";
-import { transformEvents } from "../utils/transformers";
+import CardSurface from "../../components/CardSurface";
+import EventCard from "../../components/EventCard";
+import { Event } from "../../types/types";
+import { transformEvents } from "../../utils/transformers";
 SplashScreen.preventAutoHideAsync();
 
 const { width, height } = Dimensions.get("window");

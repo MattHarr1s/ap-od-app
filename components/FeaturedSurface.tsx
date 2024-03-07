@@ -6,13 +6,13 @@ import { Href, Link, LinkProps } from "expo-router";
 import FeaturedHeadline from "./FeaturedHeadline";
 
 interface FeaturedSurfaceProps {
-  headline: string; 
-  link: LinkProps<string>["href"];
+  headline: string;
+  link: LinkProps<string>["href"] | Href | undefined;
   linkLabel: string;
   children: any;
   linkStyle: any;
   height: number;
-  style: any;  
+  style: any;
 }
 
 const FeaturedSurface: React.FC<FeaturedSurfaceProps> = ({
@@ -22,14 +22,14 @@ const FeaturedSurface: React.FC<FeaturedSurfaceProps> = ({
   linkStyle,
   children,
   height,
-  style
+  style,
 }) => (
   <Surface style={style}>
-    <FeaturedHeadline headline={headline}  />
+    <FeaturedHeadline headline={headline} />
     <View
       style={{
         marginTop: 10,
-      flex: 1,  // Take up all available space
+        flex: 1, // Take up all available space
         width: "100%", // Full width
         justifyContent: "center",
         alignItems: "center",
@@ -38,9 +38,17 @@ const FeaturedSurface: React.FC<FeaturedSurfaceProps> = ({
       }}
     >
       {children}
-      <Link href={link} asChild>
-        <Button textColor={linkStyle?.textColor ? linkStyle?.textColor : null} buttonColor={linkStyle?.buttonColor ? linkStyle.buttonColor : null} mode="contained">{linkLabel}</Button>
-      </Link>
+      {link && linkLabel && linkStyle && height && style && (
+        <Link href={link} asChild>
+          <Button
+            textColor={linkStyle?.textColor ? linkStyle?.textColor : null}
+            buttonColor={linkStyle?.buttonColor ? linkStyle.buttonColor : null}
+            mode="contained"
+          >
+            {linkLabel}
+          </Button>
+        </Link>
+      )}
     </View>
   </Surface>
 );
@@ -49,7 +57,7 @@ const styles = StyleSheet.create({
   surface: {
     borderRadius: 15, // Adjust for desired roundness
     elevation: 3, // Adjust for desired shadow depth
-    margin: 5, // Spacing from the surrounding elements    
+    margin: 5, // Spacing from the surrounding elements
   },
 });
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { StoreProvider } from 'easy-peasy';
-import store from '../components/Store/store';
-import { SplashScreen, Tabs } from "expo-router";
+import { StoreProvider, useStoreState } from "easy-peasy";
+import store from "../components/Store/store";
+import { SplashScreen, Stack, Tabs } from "expo-router";
 import { useFonts } from "expo-font";
 import { useColorScheme } from "react-native";
 import {
@@ -19,12 +19,12 @@ const theme = {
   roundness: 2,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#ea5b3a', // Red Orange
-    accent: '#4caad8', // Blue
-    background: '#60155e', // Purple
-    surface: '#fcb41c', // Yellow
-    text: '#a3cc27', // Green
-    backdrop: '#f79731', // Orange
+    primary: "#ea5b3a", // Red Orange
+    accent: "#4caad8", // Blue
+    background: "#60155e", // Purple
+    surface: "#fcb41c", // Yellow
+    text: "#a3cc27", // Green
+    backdrop: "#f79731", // Orange
   },
 };
 export {
@@ -40,7 +40,7 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+export default function RootLayout() {  
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
@@ -73,197 +73,15 @@ function RootLayoutNav() {
       clientId="mAbFw0HUixGgHaCl6f6vSwUhbJRNXRIG"
     >
       <StoreProvider store={store}>
-      <PaperProvider theme={theme}>
-        <SafeAreaProvider>
-          <Tabs
-            safeAreaInsets={{ left: 2, right: 2 }}
-            screenOptions={{
-              tabBarIconStyle: {
-                width: 24,
-                height: 24,
-              },
-            }}
-          >
-            <Tabs.Screen
-              name="index"
-              options={{
-                title: "HOME",
-                headerShown: false,                
-                tabBarIcon(props) {
-                  
-                  return (
-                    <MaterialCommunityIcons
-                      color={props.focused ? "#4caad8" : "#ffffff"}
-                      size={24}
-                      name={
-                        props.focused ? "home-circle" : "home-circle-outline"
-                      }
-                      backgroundColor={props.focused ? "#ffffff" : "#4caad8"}
-                    />
-                  );
-                },
-              }}
-            />
-            <Tabs.Screen
-              name="events"
-              options={{
-                headerShown: true,                               
-                title: "EVENTS",      
-                tabBarLabelStyle: {
-                  color: "#ffffff",
-                  backgroundColor: "#60155e",
-                  width: "100%",
-                  padding: 2,
-                },                        
-                tabBarIcon(props) {
-                  return (
-                    <MaterialCommunityIcons
-                      color="#ffffff"                       
-                      size={24}
-                      name={
-                        props.focused
-                          ? "calendar-month"
-                          : "calendar-month-outline"
-                      }
-                    />
-                  );
-                },
-                tabBarIconStyle: {
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "#60155e",
-                },
-                headerStyle: {
-                  backgroundColor: "#60155e",
-                  
-                },
-                headerRight: () => (
-                  <MaterialCommunityIcons
-                    color="#ffffff"
-                    size={24}
-                    name="magnify"
-                    style={{ marginRight: 10 }}
-                    onPress={() => {
-                      
-                    }}
-                  />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="resources"
-              options={{
-                headerShown: true,
-                title: "RESOURCES",
-                tabBarLabelStyle: {
-                  color: "#ffffff",
-                  backgroundColor: "#fcba1c",
-                  width: "100%",
-                  padding: 2,
-                },                
-                tabBarIcon(props) {
-                  return (
-                    <MaterialCommunityIcons
-                      color="#ffffff"
-                      size={24}
-                      name={
-                        props.focused
-                          ? "newspaper-variant-multiple"
-                          : "newspaper-variant-multiple-outline"
-                      }
-                    />
-                  );
-                },
-                tabBarIconStyle: {
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "#fcba1c",
-                },
-
-              }}
-            />
-            <Tabs.Screen
-              name="resource/[slug]"
-              options={{
-                headerShown: true,
-                title: "Resource",
-                href: null,
-              }}
-            />
-            <Tabs.Screen
-              name="event/[slug]"
-              options={{
-                headerShown: true,
-                title: "Resource",
-                href: null,
-              }}
-            />
-            <Tabs.Screen
-              name="rewards"
-              options={{
-                headerShown: true,
-                title: "MEMBERS",
-                tabBarLabelStyle: {
-                  color: "#ffffff",
-                  backgroundColor: "#4caad8",
-                  width: "100%",
-                  padding: 2,
-                },                
-                tabBarIcon(props) {
-                  return (
-                    <MaterialCommunityIcons
-                      color="#ffffff"
-                      size={24}
-                      name={props.focused ? "wallet" : "wallet-outline"}
-                    />
-                  );
-                },
-                tabBarIconStyle: {
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "#4caad8",
-                },
-
-              }}
-            />
-            <Tabs.Screen
-              name="profile"
-              options={{
-                headerShown: true,                               
-                title: "PROFILE",
-                tabBarLabelStyle: {
-                  color: "#ffffff",
-                  backgroundColor: "#a3cc27",
-                  width: "100%",
-                  padding: 2,
-                },                
-
-                tabBarIcon(props) {
-                  const color = "#ffffff";
-
-                  return (
-                    <MaterialCommunityIcons
-                      color="#ffffff"
-                      size={24}
-                      name={
-                        props.focused
-                          ? "account-circle"
-                          : "account-circle-outline"
-                      }
-                    />
-                  );
-                },
-                tabBarIconStyle: {
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "#a3cc27",
-                },
-
-              }}
-            />
-          </Tabs>
-        </SafeAreaProvider>
-      </PaperProvider>
+        <PaperProvider theme={theme}>
+          <SafeAreaProvider>
+            <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(home)" options={{ headerShown: true }} />
+            </Stack>
+              
+          </SafeAreaProvider>
+        </PaperProvider>
       </StoreProvider>
     </Auth0Provider>
   );

@@ -68,3 +68,26 @@ export interface RewardItem {
   title: string;
   image: string;
 }
+
+
+interface Taxonomy {
+  name: string;
+  slug: string;
+  description: string;
+  types: string[];
+}
+
+interface Category {
+  id: number;
+  count: number;
+  description: string;
+  link: string;
+  name: string;
+  slug: string;
+  taxonomy: string;
+  parent: number;
+}
+
+interface ApiResponse<T> {
+  [key: string]: T;
+}

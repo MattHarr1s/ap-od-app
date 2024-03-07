@@ -3,7 +3,7 @@ import { Platform, StyleSheet, Image } from "react-native";
 import { Text } from "react-native-paper";
 import {  View } from "react-native";
 
-const logo = require("../assets/images/ap_logo_left_v2.png");
+const logo = require("../../assets/images/ap_logo_left_v2.png");
 export default function RewardsScreen() {
   return (
     <View style={styles.container}>

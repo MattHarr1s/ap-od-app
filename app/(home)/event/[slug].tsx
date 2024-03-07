@@ -8,10 +8,10 @@ import { View, useWindowDimensions } from "react-native";
 import { Text, Card, Paragraph, ActivityIndicator } from "react-native-paper";
 import { Surface } from "react-native-paper";
 import RenderHTML from "react-native-render-html";
-import { Event } from "../../types/types";
-import { transformEvents } from "../../utils/transformers";
+import { Event } from "../../../types/types";
+import { transformEvents } from "../../../utils/transformers";
 import * as SplashScreen from "expo-splash-screen";
-import EventCard from "../../components/EventCard";
+import EventCard from "../../../components/EventCard";
 SplashScreen.preventAutoHideAsync();
 
 

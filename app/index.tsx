@@ -16,14 +16,13 @@ import FeaturedSurface from "../components/FeaturedSurface";
 import CardSurface from "../components/CardSurface";
 import { Event, Post } from "../types/types";
 import { transformEvents, transformPosts } from "../utils/transformers";
+import Onboarding from "../components/Onboarding";
 
 import { useAuth0 } from "react-native-auth0";
 import { ScrollView } from "react-native-gesture-handler";
 const logo = require("../assets/images/ap_logo_left_v2.png");
 const purpleBackground = require("../assets/images/purple_button.png");
 const { width, height } = Dimensions.get("window");
-
-
 
 const rewardsItems = [
   {
@@ -50,33 +49,53 @@ const rewardsItems = [
 
 SplashScreen.preventAutoHideAsync();
 
-
 export default function HomeScreen() {
   // const { authorize, clearSession, user, error, getCredentials, isLoading } =
   //   useAuth0();
-  // const [events, setEvents] = useState<Event[]>([]);
-  const [eventsLoading, setEventsLoading] = useState(true);
-  const [postsLoading, setPostsLoading] = useState(true);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const  theme  = useTheme();
+  const theme = useTheme();
   type MyActions = Actions<{}> & {
     fetchFeaturedEvents: () => void;
   };
+  const onboardingStep = useStoreState((state) => state.onboardingStep);
   const featuredEvents = useStoreState((state) => state.featuredEvents);
   const featuredResources = useStoreState((state) => state.featuredResources);
   const getFeaturedEvents = useStoreActions<MyActions>(
     (actions) => actions.fetchFeaturedEvents
   );
-  
+
   const getFeaturedResources = useStoreActions<MyActions>(
     (actions) => actions.fetchFeaturedResources
   );
 
-  
-  useEffect(() => { 
-    getFeaturedResources();
-    getFeaturedEvents();  
+  useEffect(() => {
+    if (onboardingStep > 4) {
+      getFeaturedResources();
+      getFeaturedEvents();
+    }
   }, []);
+
+  if (onboardingStep < 5) {
+    return (
+      <View style={styles.onboarding}>
+        <Image
+          source={logo}
+          style={{
+            width: "80%",
+            height: 100,
+            objectFit: "contain",
+            marginTop: 10,
+          }}
+        />
+        <Divider />
+        {/* <ImageBackground
+          source={purpleBackground}
+          style={{ width: "100%", height: "100%" }}
+        > */}
+          <Onboarding />
+        {/* </ImageBackground> */}
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -96,7 +115,10 @@ export default function HomeScreen() {
           height={height}
           link="/events/"
           linkLabel="All Events"
-          linkStyle={{ buttonColor: "white", textColor: theme.colors.background }}
+          linkStyle={{
+            buttonColor: "white",
+            textColor: theme.colors.background,
+          }}
           style={{ backgroundColor: theme.colors.background }}
         >
           {featuredEvents?.length === 0 ? (
@@ -129,8 +151,11 @@ export default function HomeScreen() {
           height={height}
           link="/resources/"
           linkLabel="All Resources"
-          style={{ backgroundColor: theme.colors.surface}}
-          linkStyle={{ buttonColor: "white", textColor: theme.colors.background }}
+          style={{ backgroundColor: theme.colors.surface }}
+          linkStyle={{
+            buttonColor: "white",
+            textColor: theme.colors.background,
+          }}
         >
           {featuredResources.length === 0 ? (
             <ActivityIndicator animating={true} />
@@ -226,6 +251,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingTop: 20,
   },
+  onboarding: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-start", 
+    alignContent: "center",   
+    marginTop: 20,
+    width: "100%",
+  },
   separator: {
     marginVertical: 30,
     height: 1,
@@ -259,7 +292,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "column",
     paddingBottom: 16,
-  },  
+  },
   eventSurface: {
     width: width * 0.8, // Use 80% of the screen width for card
     height: height * 0.42, // Use 40% of the screen height for card
@@ -289,14 +322,13 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 15,
     margin: 6,
-    padding: 5,    
+    padding: 5,
   },
   surface: {
     borderRadius: 15, // Adjust for desired roundness
 
     elevation: 3, // Adjust for desired shadow depth
     margin: 5, // Spacing from the surrounding elements
-    
   },
   headerContainer: {
     flexDirection: "row",

@@ -6,9 +6,9 @@ import { useLocalSearchParams, useGlobalSearchParams, useNavigation } from "expo
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
-import { Post } from "../../types/types";
-import { transformPosts } from "../../utils/transformers";
-import PostCard from "../../components/PostCard";
+import { Post } from "../../../types/types";
+import { transformPosts } from "../../../utils/transformers";
+import PostCard from "../../../components/PostCard";
 
 export default function ResourceScreen() {
   const { slug } = useLocalSearchParams();
