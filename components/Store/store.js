@@ -12,9 +12,14 @@ const store = createStore({
   eventCategories: [],
   resourceCategories: [],
   resourceTaxonomies: [],
+  forYouEvents: [],
+  forYouResources: [],
+  locationServicesEnabled: false,
+  location: {},
   zipCode: "",
   favoriteEvents: [],
-  interests: [],
+  interestedResourceCategories: [],
+  interestedEventCategories: [],
   setOnboardingStep: action((state, payload) => {
     state.onboardingStep = payload;
   }),
@@ -48,6 +53,17 @@ const store = createStore({
     state.eventTaxonomies = taxonomies;
   }
   ),
+  setInterestedResourceCategories: action((state, categories) => {
+    state.interestedResourceCategories = categories;
+  }
+  ),
+  setInterestedEventCategories: action((state, categories) => {
+    state.interestedEventCategories = categories;
+  }
+  ),
+  setLocation: action((state, location) => {
+    state.location = location;
+  }),
   // setFavoriteEvents: action((state, events) => {
   //   state.favoriteEvents = events;
   // }
@@ -78,7 +94,7 @@ const store = createStore({
 
   fetchResourceCategories: thunk(async (actions, payload) => {
     const response = await fetch('https://staging.ap-od.org//wp-json/wp/v2/categories?&_embed&type=post');
-    
+
     const data = await response.json();
     const newData = data.filter((category) => {
       if (category?.name?.includes('Facilitator')) {
@@ -94,9 +110,16 @@ const store = createStore({
   }
   ),
   fetchResourceTaxonomies: thunk(async (actions, payload) => {
-    const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/taxonomies?type=post');    
+    const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/taxonomies?type=post');
     const data = await response.json();
     actions.setResourceCategories(data);
+  }
+  ),
+  fetchEventCategories: thunk(async (actions, payload) => {
+    const response = await fetch('https://staging.ap-od.org/wp-json/tribe/events/v1/tags?exclude=150&exclude=156&exclude=160');
+    const data = await response.json();
+    
+    actions.setEventCategories(data.tags);
   }
   ),
 
@@ -114,6 +137,9 @@ const store = createStore({
   }),
   addResource: action((state, resource) => {
     state.resources.push(resource);
+  }),
+  setLocationServicesEnabled: action((state, isEnabled) => {
+    state.locationServicesEnabled = isEnabled;
   }),
 });
 

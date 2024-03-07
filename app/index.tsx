@@ -72,7 +72,7 @@ export default function HomeScreen() {
       getFeaturedResources();
       getFeaturedEvents();
     }
-  }, []);
+  }, [onboardingStep]);
 
   if (onboardingStep < 5) {
     return (
