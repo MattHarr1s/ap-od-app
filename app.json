@@ -8,7 +8,7 @@
     "scheme": "ap-od",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash-beta.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

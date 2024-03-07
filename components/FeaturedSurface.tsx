@@ -6,28 +6,30 @@ import { Href, Link, LinkProps } from "expo-router";
 import FeaturedHeadline from "./FeaturedHeadline";
 
 interface FeaturedSurfaceProps {
-  headline: string;
- 
+  headline: string; 
   link: LinkProps<string>["href"];
   linkLabel: string;
   children: any;
-
+  linkStyle: any;
   height: number;
+  style: any;  
 }
 
 const FeaturedSurface: React.FC<FeaturedSurfaceProps> = ({
   headline,
   link,
   linkLabel,
+  linkStyle,
   children,
   height,
+  style
 }) => (
-  <Surface style={styles.surface}>
-    <FeaturedHeadline headline={headline} />
+  <Surface style={style}>
+    <FeaturedHeadline headline={headline}  />
     <View
       style={{
         marginTop: 10,
-        height: height * 0.5, // Adjust this value if needed
+      flex: 1,  // Take up all available space
         width: "100%", // Full width
         justifyContent: "center",
         alignItems: "center",
@@ -37,7 +39,7 @@ const FeaturedSurface: React.FC<FeaturedSurfaceProps> = ({
     >
       {children}
       <Link href={link} asChild>
-        <Button mode="contained">{linkLabel}</Button>
+        <Button textColor={linkStyle?.textColor ? linkStyle?.textColor : null} buttonColor={linkStyle?.buttonColor ? linkStyle.buttonColor : null} mode="contained">{linkLabel}</Button>
       </Link>
     </View>
   </Surface>
@@ -47,8 +49,7 @@ const styles = StyleSheet.create({
   surface: {
     borderRadius: 15, // Adjust for desired roundness
     elevation: 3, // Adjust for desired shadow depth
-    margin: 5, // Spacing from the surrounding elements
-    backgroundColor: "#fff", // Adjust background color as needed
+    margin: 5, // Spacing from the surrounding elements    
   },
 });
 

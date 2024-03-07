@@ -17,7 +17,6 @@ const CardSurface: React.FC<CardSurfaceProps> = ({
     <Surface
       style={{
         width: width * 0.8, // Use 80% of the screen width for card
-        height: height * 0.5, // Use 40% of the screen height for card
         justifyContent: "center",
         alignItems: "center",
         flex: 2,
@@ -32,13 +31,13 @@ const CardSurface: React.FC<CardSurfaceProps> = ({
 
 const styles = StyleSheet.create({
   cardSurfaceWrap: {
-    overflow: "hidden",
+    overflow: "visible",
     borderRadius: 15,
     margin: 6,
     padding: 5,
     backgroundColor: "#fff",
+    flex:2
   },
 });
-
 
 export default CardSurface;

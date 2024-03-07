@@ -23,7 +23,7 @@ export default function ResourceScreen() {
           `https://ap-od.org/wp-json/wp/v2/posts?_embed&slug=${slug}`
         );
         const json = await response.json();        
-        const post =  await transformPosts(json)[0];        
+        const post =  await transformPosts(json)[0];              
         setNews(post);
         setLoading(false);
       }

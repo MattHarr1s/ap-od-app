@@ -40,7 +40,7 @@ export default function EventsScreen() {
     const getEvents = async () => {
       try {
         const response = await fetch(
-          "https://staging.ap-od.org/wp-json/tribe/events/v1/events?_embed&per_page=5&categories=147"
+          "https://staging.ap-od.org/wp-json/tribe/events/v1/events?_embed&categories=147"
         );
         const json = await response.json();
         const events = transformEvents(json.events);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, Image, Dimensions } from "react-native";
+import { useStoreState, useStoreActions, Actions } from "easy-peasy";
 import { ActivityIndicator } from "react-native-paper";
 import { useTheme } from "react-native-paper";
 import { Link, SplashScreen } from "expo-router";
@@ -9,7 +10,6 @@ import { Chip, Card, Divider, Text } from "react-native-paper";
 import { Surface } from "react-native-paper";
 import { ImageBackground, View } from "react-native";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
-
 import PostCard from "../components/PostCard";
 import EventCard from "../components/EventCard";
 import FeaturedSurface from "../components/FeaturedSurface";
@@ -54,35 +54,28 @@ SplashScreen.preventAutoHideAsync();
 export default function HomeScreen() {
   // const { authorize, clearSession, user, error, getCredentials, isLoading } =
   //   useAuth0();
-  const [events, setEvents] = useState<Event[]>([]);
+  // const [events, setEvents] = useState<Event[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
-  const { colors } = useTheme();
+  const  theme  = useTheme();
+  type MyActions = Actions<{}> & {
+    fetchFeaturedEvents: () => void;
+  };
+  const featuredEvents = useStoreState((state) => state.featuredEvents);
+  const featuredResources = useStoreState((state) => state.featuredResources);
+  const getFeaturedEvents = useStoreActions<MyActions>(
+    (actions) => actions.fetchFeaturedEvents
+  );
+  
+  const getFeaturedResources = useStoreActions<MyActions>(
+    (actions) => actions.fetchFeaturedResources
+  );
 
-  useEffect(() => {
-    const getEvents = async () => {
-      const response = await fetch(
-        "https://staging.ap-od.org/wp-json/tribe/events/v1/events?_embed&per_page=4&categories=147"
-      );
-      const json = await response.json();
-      const transformedEvents = transformEvents(json.events);
-      setEvents(transformedEvents);
-      setEventsLoading(false);
-    };
-
-    //create function to get posts from wordpress rest api using fetch and https://staging.ap-od.org/wp-json/wp/v2/posts/
-    const getPosts = async () => {
-      const response = await fetch(
-        "https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=5"
-      );
-      const json = await response.json();
-      const transformedPosts = transformPosts(json);
-      setPosts(transformedPosts);
-      setPostsLoading(false);
-    };
-    getPosts();
-    getEvents();
+  
+  useEffect(() => { 
+    getFeaturedResources();
+    getFeaturedEvents();  
   }, []);
 
   return (
@@ -103,8 +96,10 @@ export default function HomeScreen() {
           height={height}
           link="/events/"
           linkLabel="All Events"
+          linkStyle={{ buttonColor: "white", textColor: theme.colors.background }}
+          style={{ backgroundColor: theme.colors.background }}
         >
-          {eventsLoading ? (
+          {featuredEvents?.length === 0 ? (
             <ActivityIndicator animating={true} />
           ) : (
             <SwiperFlatList
@@ -112,7 +107,7 @@ export default function HomeScreen() {
               autoplayDelay={6}
               autoplayLoop
               index={0}
-              data={events}
+              data={featuredEvents}
               paginationActiveColor="#FF6347"
               paginationDefaultColor="gray"
               paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
@@ -134,8 +129,10 @@ export default function HomeScreen() {
           height={height}
           link="/resources/"
           linkLabel="All Resources"
+          style={{ backgroundColor: theme.colors.surface}}
+          linkStyle={{ buttonColor: "white", textColor: theme.colors.background }}
         >
-          {postsLoading ? (
+          {featuredResources.length === 0 ? (
             <ActivityIndicator animating={true} />
           ) : (
             <SwiperFlatList
@@ -143,7 +140,7 @@ export default function HomeScreen() {
               autoplayDelay={6}
               autoplayLoop
               index={0}
-              data={posts}
+              data={featuredResources}
               paginationActiveColor="#FF6347"
               paginationDefaultColor="gray"
               paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
@@ -262,7 +259,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "column",
     paddingBottom: 16,
-  },
+  },  
   eventSurface: {
     width: width * 0.8, // Use 80% of the screen width for card
     height: height * 0.42, // Use 40% of the screen height for card
@@ -292,15 +289,14 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 15,
     margin: 6,
-    padding: 5,
-    backgroundColor: "#fff",
+    padding: 5,    
   },
   surface: {
     borderRadius: 15, // Adjust for desired roundness
 
     elevation: 3, // Adjust for desired shadow depth
     margin: 5, // Spacing from the surrounding elements
-    backgroundColor: "#fff", // Adjust background color as needed
+    
   },
   headerContainer: {
     flexDirection: "row",

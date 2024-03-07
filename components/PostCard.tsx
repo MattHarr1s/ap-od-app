@@ -1,6 +1,6 @@
 // PostCard.tsx
 import React from "react";
-import { Card, Text, Button } from "react-native-paper";
+import { Card, Text, Button, useTheme } from "react-native-paper";
 import { router } from "expo-router";
 import { StyleSheet, ScrollView } from "react-native";
 import { Post } from "../types/types"; // Assuming you have a types file for your types
@@ -12,13 +12,13 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, isSingle }) => {
+  const theme = useTheme();
   return (
     <Card
       style={{
-        width: "100%", // Card takes the full width of Surface
-        height: "100%", // Card takes the full height of Surface
+        width: "100%", // Card takes the full width of Surface      
         justifyContent: "flex-start",
-        flexGrow: 1,
+        flexGrow: 2,
       }}
     >
       <Card.Cover
@@ -43,6 +43,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, isSingle }) => {
           </Card.Content>
           <Card.Actions style={styles.eventCardActions}>
             <Button
+             buttonColor={theme.colors.surface}
+             textColor="#ffffff"
               onPress={() => {
                 router.replace({
                   pathname: "/resource/[slug]",

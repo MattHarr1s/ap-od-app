@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { StoreProvider } from 'easy-peasy';
+import store from '../components/Store/store';
 import { SplashScreen, Tabs } from "expo-router";
 import { useFonts } from "expo-font";
 import { useColorScheme } from "react-native";
@@ -6,11 +8,25 @@ import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
 } from "react-native-paper";
+
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Auth0Provider } from "react-native-auth0";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
+const theme = {
+  ...DefaultTheme, // or MD3DarkTheme
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#ea5b3a', // Red Orange
+    accent: '#4caad8', // Blue
+    background: '#60155e', // Purple
+    surface: '#fcb41c', // Yellow
+    text: '#a3cc27', // Green
+    backdrop: '#f79731', // Orange
+  },
+};
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -56,19 +72,15 @@ function RootLayoutNav() {
       domain="dev-v4w65pck0ernl172.us.auth0.com"
       clientId="mAbFw0HUixGgHaCl6f6vSwUhbJRNXRIG"
     >
-      <PaperProvider theme={DefaultTheme}>
+      <StoreProvider store={store}>
+      <PaperProvider theme={theme}>
         <SafeAreaProvider>
           <Tabs
             safeAreaInsets={{ left: 2, right: 2 }}
             screenOptions={{
-              tabBarActiveTintColor: "#000000",
-              tabBarInactiveTintColor: "#000000",
               tabBarIconStyle: {
                 width: 24,
                 height: 24,
-              },
-              tabBarStyle: {
-                backgroundColor: "#ffffff",
               },
             }}
           >
@@ -76,15 +88,17 @@ function RootLayoutNav() {
               name="index"
               options={{
                 title: "HOME",
-                headerShown: false,
+                headerShown: false,                
                 tabBarIcon(props) {
+                  
                   return (
                     <MaterialCommunityIcons
-                      color={props.color}
+                      color={props.focused ? "#4caad8" : "#ffffff"}
                       size={24}
                       name={
                         props.focused ? "home-circle" : "home-circle-outline"
                       }
+                      backgroundColor={props.focused ? "#ffffff" : "#4caad8"}
                     />
                   );
                 },
@@ -93,12 +107,18 @@ function RootLayoutNav() {
             <Tabs.Screen
               name="events"
               options={{
-                headerShown: true,
-                title: "EVENTS",
+                headerShown: true,                               
+                title: "EVENTS",      
+                tabBarLabelStyle: {
+                  color: "#ffffff",
+                  backgroundColor: "#60155e",
+                  width: "100%",
+                  padding: 2,
+                },                        
                 tabBarIcon(props) {
                   return (
                     <MaterialCommunityIcons
-                      color={props.color}
+                      color="#ffffff"                       
                       size={24}
                       name={
                         props.focused
@@ -108,6 +128,26 @@ function RootLayoutNav() {
                     />
                   );
                 },
+                tabBarIconStyle: {
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#60155e",
+                },
+                headerStyle: {
+                  backgroundColor: "#60155e",
+                  
+                },
+                headerRight: () => (
+                  <MaterialCommunityIcons
+                    color="#ffffff"
+                    size={24}
+                    name="magnify"
+                    style={{ marginRight: 10 }}
+                    onPress={() => {
+                      
+                    }}
+                  />
+                ),
               }}
             />
             <Tabs.Screen
@@ -115,10 +155,16 @@ function RootLayoutNav() {
               options={{
                 headerShown: true,
                 title: "RESOURCES",
+                tabBarLabelStyle: {
+                  color: "#ffffff",
+                  backgroundColor: "#fcba1c",
+                  width: "100%",
+                  padding: 2,
+                },                
                 tabBarIcon(props) {
                   return (
                     <MaterialCommunityIcons
-                      color={props.color}
+                      color="#ffffff"
                       size={24}
                       name={
                         props.focused
@@ -128,6 +174,12 @@ function RootLayoutNav() {
                     />
                   );
                 },
+                tabBarIconStyle: {
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#fcba1c",
+                },
+
               }}
             />
             <Tabs.Screen
@@ -151,26 +203,47 @@ function RootLayoutNav() {
               options={{
                 headerShown: true,
                 title: "MEMBERS",
+                tabBarLabelStyle: {
+                  color: "#ffffff",
+                  backgroundColor: "#4caad8",
+                  width: "100%",
+                  padding: 2,
+                },                
                 tabBarIcon(props) {
                   return (
                     <MaterialCommunityIcons
-                      color={props.color}
+                      color="#ffffff"
                       size={24}
                       name={props.focused ? "wallet" : "wallet-outline"}
                     />
                   );
                 },
+                tabBarIconStyle: {
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#4caad8",
+                },
+
               }}
             />
             <Tabs.Screen
               name="profile"
               options={{
-                headerShown: true,
+                headerShown: true,                               
                 title: "PROFILE",
+                tabBarLabelStyle: {
+                  color: "#ffffff",
+                  backgroundColor: "#a3cc27",
+                  width: "100%",
+                  padding: 2,
+                },                
+
                 tabBarIcon(props) {
+                  const color = "#ffffff";
+
                   return (
                     <MaterialCommunityIcons
-                      color={props.color}
+                      color="#ffffff"
                       size={24}
                       name={
                         props.focused
@@ -180,18 +253,18 @@ function RootLayoutNav() {
                     />
                   );
                 },
+                tabBarIconStyle: {
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#a3cc27",
+                },
+
               }}
             />
           </Tabs>
         </SafeAreaProvider>
       </PaperProvider>
+      </StoreProvider>
     </Auth0Provider>
   );
 }
-
-const styles = {
-  bottomNav: {
-    backgroundColor: "#ffffff",
-    color: "#000000",
-  },
-};

@@ -91,12 +91,10 @@ const formatDate = (date: string) => {
   });
 }
 
-export const transformEvents = (events: RawEvent[]): Event[] => {
-  return events
-    .map((event) => {
+export const transformEvents = (events: RawEvent[]): Event[] => {  
+  return events.map((event) => {
       const decodedTitle = he.decode(event.title);
       const decodedExcerpt = he.decode(event.excerpt);
-
       return {
         id: event.id,
         title: decodedTitle,
@@ -115,9 +113,8 @@ export const transformEvents = (events: RawEvent[]): Event[] => {
     .filter((event): event is Event => event !== null);
 };
 
-
-
 export const transformPosts = (posts: RawPost[]): Post[] => {
+  console.log(posts);
   return posts.map((post) => {
     
     const decodedTitle = he.decode(post?.title?.rendered);
@@ -140,6 +137,34 @@ export const transformPosts = (posts: RawPost[]): Post[] => {
   });
 };
 
+function transformPost(data) {
+  const { content, featuredMedia, ...rest } = data;
+
+  // Function to remove images that match the featuredMedia URL
+  const removeFeaturedImageFromContent = (htmlContent, imageUrl) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+
+    const images = doc.querySelectorAll('img');
+    images.forEach(img => {
+      if (img.src === imageUrl) {
+        img.parentNode.removeChild(img);
+      }
+    });
+
+    return doc.body.innerHTML;
+  };
+
+  // Use the function to clean the content
+  const cleanedContent = removeFeaturedImageFromContent(content, featuredMedia);
+
+  return {
+    ...rest,
+    content: cleanedContent,
+    featuredMedia,
+  };
+}
+
 
 
 async function getMediaUrlById(mediaId: number): Promise<string> {
@@ -160,22 +185,22 @@ async function getMediaUrlById(mediaId: number): Promise<string> {
 }
 
 // Transformer function
-export const  transformPost = async (rawPost: RawSinglePost): Promise<TransformedPost> => {
+// export const  transformPost = async (rawPost: RawSinglePost): Promise<TransformedPost> => {
   
-  const featuredImageUrl = await getMediaUrlById(rawPost.featured_media);
+//   const featuredImageUrl = await getMediaUrlById(rawPost.featured_media);
 
-  return {
-    id: rawPost.id,
-    date: new Date(rawPost.date).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    }),
-    slug: rawPost.slug,
-    link: rawPost.link,
-    title: he.decode(rawPost?.title?.rendered),
-    content: he.decode(rawPost?.content?.rendered),
-    excerpt: he.decode(rawPost?.excerpt?.rendered?.replace(/<\/?[^>]+(>|$)/g, "")), // Remove HTML tags and decode entities
-    featuredImage: featuredImageUrl,
-  };
-}
+//   return {
+//     id: rawPost.id,
+//     date: new Date(rawPost.date).toLocaleDateString('en-US', {
+//       month: 'long',
+//       day: 'numeric',
+//       year: 'numeric',
+//     }),
+//     slug: rawPost.slug,
+//     link: rawPost.link,
+//     title: he.decode(rawPost?.title?.rendered),
+//     content: he.decode(rawPost?.content?.rendered),
+//     excerpt: he.decode(rawPost?.excerpt?.rendered?.replace(/<\/?[^>]+(>|$)/g, "")), // Remove HTML tags and decode entities
+//     featuredImage: featuredImageUrl,
+//   };
+// }
