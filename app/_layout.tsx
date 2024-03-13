@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StoreProvider, useStoreState } from "easy-peasy";
 import store from "../components/Store/store";
-import { SplashScreen, Stack, Tabs } from "expo-router";
+import { SplashScreen, Stack, useRootNavigationState } from "expo-router";
 import { useFonts } from "expo-font";
 import { useColorScheme } from "react-native";
 import {
@@ -40,7 +40,9 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {  
+export default function RootLayout() {
+  const rootNavigationState = useRootNavigationState();
+
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
@@ -51,8 +53,10 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
-    if (loaded) {
+  useEffect(() => 
+  {
+    
+    if (loaded ) {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
@@ -76,10 +80,9 @@ function RootLayoutNav() {
         <PaperProvider theme={theme}>
           <SafeAreaProvider>
             <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(home)" options={{ headerShown: true }} />
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(home)" options={{ headerShown: false }} />
             </Stack>
-              
           </SafeAreaProvider>
         </PaperProvider>
       </StoreProvider>

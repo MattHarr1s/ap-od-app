@@ -47,3 +47,7 @@ ios/apod.xcodeproj/project.pbxproj
 ios/apod.xcodeproj/project.pbxproj
 ios/apod.xcodeproj/project.pbxproj
 .yarn/install-state.gz
+.idea/.gitignore
+.idea/modules.xml
+.idea/paper-test.iml
+.idea/vcs.xml

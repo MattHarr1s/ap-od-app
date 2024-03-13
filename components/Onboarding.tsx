@@ -14,6 +14,7 @@ import {
 import { StyleSheet } from "react-native";
 import { useStoreState, useStoreActions, useStoreDispatch } from "easy-peasy";
 import * as Location from "expo-location";
+import { router } from "expo-router";
 import FeaturedHeadline from "./FeaturedHeadline";
 import FeaturedSurface from "./FeaturedSurface";
 import { set } from "react-hook-form";
@@ -48,6 +49,11 @@ const Onboarding = () => {
   const fetchEventCategories = useStoreActions(
     (actions) => actions.fetchEventCategories
   );
+  const fetchUserEventsAndResources = useStoreActions(
+    (actions) => actions.fetchUserEventsAndResources
+  );
+    
+
 
   const location = useStoreState((state) => state.location);
   const setLocation = useStoreActions((actions) => actions.setLocation);
@@ -55,6 +61,8 @@ const Onboarding = () => {
   useEffect(() => {
     fetchResourceCategories();
     fetchEventCategories();
+    console.log("Onboarding Step", onboardingStep);
+    console.log("selectedResourceCategories", interestedResourceCategories);
   }, []);
 
   useEffect(() => {
@@ -100,7 +108,9 @@ const Onboarding = () => {
     setOnboardingStep(3);
   };
   const handleStep4Change = () => {
-    setOnboardingStep(4);
+    fetchUserEventsAndResources("all");
+    setOnboardingStep(5);
+    router.replace("/home/index");
   };
 
   const requestLocation = async () => {
@@ -112,7 +122,7 @@ const Onboarding = () => {
   return (
     <>
       <Surface elevation={4} style={styles.surface}>
-        <Text>Step {onboardingStep}</Text>
+        
         <ProgressBar progress={onboardingStep * 0.25} />
 
         {onboardingStep === 0 && (

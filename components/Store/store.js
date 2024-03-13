@@ -1,8 +1,10 @@
-import { createStore, action, thunk } from 'easy-peasy';
+import { createStore, action, thunk, persist } from 'easy-peasy';
 import { transformEvents, transformPosts } from '../../utils/transformers';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-const store = createStore({
+
+const store = createStore(persist({
   onboardingStep: 0,
   resources: [],
   events: [],
@@ -118,10 +120,22 @@ const store = createStore({
   fetchEventCategories: thunk(async (actions, payload) => {
     const response = await fetch('https://staging.ap-od.org/wp-json/tribe/events/v1/tags?exclude=150&exclude=156&exclude=160');
     const data = await response.json();
-    
+
     actions.setEventCategories(data.tags);
   }
   ),
+  fetchUserEventsAndResources: thunk(async (actions, payload, helpers) => {
+    const { location, interestedResourceCategories, interestedEventCategories, } = helpers.getState();
+    console.log('loc',location);
+    console.log(interestedEventCategories);
+    console.log(interestedResourceCategories);
+
+
+    // const resources = await fetch(`https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=${payload}`);
+    // const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=20');
+    // const data = await response.json();
+    // actions.setResources(data);
+  }),
 
   setZipCode: action((state, zipCode) => {
     state.zipCode = zipCode;
@@ -141,7 +155,24 @@ const store = createStore({
   setLocationServicesEnabled: action((state, isEnabled) => {
     state.locationServicesEnabled = isEnabled;
   }),
-});
+}, {
+  storage: {
+    getItem: async function (key) {      
+      const value = await AsyncStorage.getItem(key);
+      return JSON.parse(value);
+    },
+    setItem: function (key, value) {      
+      AsyncStorage.setItem(key, JSON.stringify(value))
+    }
+  },
+  allow: ['onboardingStep', 'interestedResourceCategories', 
+  'interestedEventCategories', 'locationServicesEnabled', 
+  'location', 'zipCode', 'events', 'featuredEvents', 
+  'featuredResources', 'resourceCategories', 'eventCategories', 
+  'resourceCategories', 'resourceTaxonomies', 
+  'forYouEvents', 'forYouResources', 'resources', 
+  'favoriteEvents']
+}));
 
 
 export default store;

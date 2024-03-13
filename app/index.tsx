@@ -4,7 +4,13 @@ import { Platform, StyleSheet, Image, Dimensions } from "react-native";
 import { useStoreState, useStoreActions, Actions } from "easy-peasy";
 import { ActivityIndicator } from "react-native-paper";
 import { useTheme } from "react-native-paper";
-import { Link, SplashScreen } from "expo-router";
+import {
+  Link,
+  SplashScreen,
+  router,
+  useRootNavigationState,
+  Redirect,
+} from "expo-router";
 import { Button } from "react-native-paper";
 import { Chip, Card, Divider, Text } from "react-native-paper";
 import { Surface } from "react-native-paper";
@@ -52,6 +58,7 @@ SplashScreen.preventAutoHideAsync();
 export default function HomeScreen() {
   // const { authorize, clearSession, user, error, getCredentials, isLoading } =
   //   useAuth0();
+  const rootNavigationState = useRootNavigationState();
   const theme = useTheme();
   type MyActions = Actions<{}> & {
     fetchFeaturedEvents: () => void;
@@ -67,10 +74,18 @@ export default function HomeScreen() {
     (actions) => actions.fetchFeaturedResources
   );
 
+  const fetchUserEventsAndResources = useStoreActions<MyActions>(
+    (actions) => actions.fetchUserEventsAndResources
+  );
+
   useEffect(() => {
     if (onboardingStep > 4) {
       getFeaturedResources();
       getFeaturedEvents();
+      if (rootNavigationState?.key) {
+        fetchUserEventsAndResources();
+        router.push("(home)");
+      }
     }
   }, [onboardingStep]);
 
@@ -87,12 +102,7 @@ export default function HomeScreen() {
           }}
         />
         <Divider />
-        {/* <ImageBackground
-          source={purpleBackground}
-          style={{ width: "100%", height: "100%" }}
-        > */}
-          <Onboarding />
-        {/* </ImageBackground> */}
+        <Onboarding />
       </View>
     );
   }
@@ -254,8 +264,8 @@ const styles = StyleSheet.create({
   onboarding: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "flex-start", 
-    alignContent: "center",   
+    justifyContent: "flex-start",
+    alignContent: "center",
     marginTop: 20,
     width: "100%",
   },

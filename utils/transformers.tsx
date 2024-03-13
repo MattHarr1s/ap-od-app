@@ -95,6 +95,7 @@ export const transformEvents = (events: RawEvent[]): Event[] => {
   return events.map((event) => {
       const decodedTitle = he.decode(event.title);
       const decodedExcerpt = he.decode(event.excerpt);
+      console.log(event.image);
       return {
         id: event.id,
         title: decodedTitle,
@@ -113,17 +114,13 @@ export const transformEvents = (events: RawEvent[]): Event[] => {
     .filter((event): event is Event => event !== null);
 };
 
-export const transformPosts = (posts: RawPost[]): Post[] => {
-  console.log(posts);
-  return posts.map((post) => {
-    
+export const transformPosts = (posts: RawPost[]): Post[] => {  
+  return posts.map((post) => {    
     const decodedTitle = he.decode(post?.title?.rendered);
     const decodedContent = he.decode(post?.content?.rendered);
     const decodedExcerpt = he.decode(post?.excerpt?.rendered);
-   
-
-    const sourceUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || post._embedded?.["wp:featuredmedia"]?.[0]?.href || "";
-
+    const sourceUrl = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || post._embedded?.["wp:featuredmedia"]?.[0]?.href || './assets/placeholder.png';
+    console.log(sourceUrl);
     return {
       id: post.id,
       title: decodedTitle,
