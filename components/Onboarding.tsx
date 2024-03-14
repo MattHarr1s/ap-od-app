@@ -144,7 +144,7 @@ const Onboarding = () => {
               questions to help us understand your family's needs and to
               personalize the content for you.
             </Text>
-            <Button mode="contained" onPress={() => setOnboardingStep(1)}>
+            <Button mode="contained" onPress={() => {console.log('press'), setOnboardingStep(1)}}>
               Get Started
             </Button>
           </>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { StoreProvider, useStoreState } from "easy-peasy";
+import { StoreProvider, useStoreRehydrated, useStoreState } from "easy-peasy";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import store from "../components/Store/store";
 import { SplashScreen, Stack, useRootNavigationState } from "expo-router";
 import { useFonts } from "expo-font";
@@ -53,11 +54,8 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => 
-  {
-    
-    if (loaded ) {
-      SplashScreen.hideAsync();
+  useEffect(() => {
+    if (loaded) {
     }
   }, [loaded]);
 
@@ -66,6 +64,43 @@ export default function RootLayout() {
   }
 
   return <RootLayoutNav />;
+}
+
+function OnBoardingLayoutNav() {
+  return (
+    <Auth0Provider
+      domain="dev-v4w65pck0ernl172.us.auth0.com"
+      clientId="mAbFw0HUixGgHaCl6f6vSwUhbJRNXRIG"
+    >
+      <StoreProvider store={store}>
+        <PaperProvider theme={theme}>
+          <SafeAreaProvider>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+            </Stack>
+          </SafeAreaProvider>
+        </PaperProvider>
+      </StoreProvider>
+    </Auth0Provider>
+  );
+}
+
+function AppContainer() {
+  const rehydrated = useStoreRehydrated();
+  const onboardingStep = useStoreState((state) => state.onboardingStep);
+  if (!rehydrated) {
+    return null;
+  }
+
+
+
+  SplashScreen.hideAsync();
+  if(onboardingStep === 5) return (<Stack><Stack.Screen name="(home)" options={{ headerShown: false }}/></Stack>  )
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+    </Stack>
+  );
 }
 
 function RootLayoutNav() {
@@ -79,10 +114,7 @@ function RootLayoutNav() {
       <StoreProvider store={store}>
         <PaperProvider theme={theme}>
           <SafeAreaProvider>
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(home)" options={{ headerShown: false }} />
-            </Stack>
+            <AppContainer />
           </SafeAreaProvider>
         </PaperProvider>
       </StoreProvider>

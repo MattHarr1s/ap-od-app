@@ -26,6 +26,7 @@ import Onboarding from "../components/Onboarding";
 
 import { useAuth0 } from "react-native-auth0";
 import { ScrollView } from "react-native-gesture-handler";
+import { set } from "react-hook-form";
 const logo = require("../assets/images/ap_logo_left_v2.png");
 const purpleBackground = require("../assets/images/purple_button.png");
 const { width, height } = Dimensions.get("window");
@@ -58,18 +59,18 @@ SplashScreen.preventAutoHideAsync();
 export default function HomeScreen() {
   // const { authorize, clearSession, user, error, getCredentials, isLoading } =
   //   useAuth0();
-  const rootNavigationState = useRootNavigationState();
   const theme = useTheme();
   type MyActions = Actions<{}> & {
     fetchFeaturedEvents: () => void;
   };
   const onboardingStep = useStoreState((state) => state.onboardingStep);
-  const featuredEvents = useStoreState((state) => state.featuredEvents);
-  const featuredResources = useStoreState((state) => state.featuredResources);
+
   const getFeaturedEvents = useStoreActions<MyActions>(
     (actions) => actions.fetchFeaturedEvents
   );
-
+  const setOnboardingStep = useStoreActions<MyActions>(
+    (actions) => actions.setOnboardingStep
+  );  
   const getFeaturedResources = useStoreActions<MyActions>(
     (actions) => actions.fetchFeaturedResources
   );
@@ -77,17 +78,6 @@ export default function HomeScreen() {
   const fetchUserEventsAndResources = useStoreActions<MyActions>(
     (actions) => actions.fetchUserEventsAndResources
   );
-
-  useEffect(() => {
-    if (onboardingStep > 4) {
-      getFeaturedResources();
-      getFeaturedEvents();
-      if (rootNavigationState?.key) {
-        fetchUserEventsAndResources();
-        router.push("(home)");
-      }
-    }
-  }, [onboardingStep]);
 
   if (onboardingStep < 5) {
     return (
@@ -107,151 +97,154 @@ export default function HomeScreen() {
     );
   }
 
-  return (
-    <View style={styles.container}>
-      <Image
-        source={logo}
-        style={{
-          width: "80%",
-          height: 100,
-          objectFit: "contain",
-          marginTop: 10,
-        }}
-      />
-      <Divider />
-      <ScrollView>
-        <FeaturedSurface
-          headline="Featured Events"
-          height={height}
-          link="/events/"
-          linkLabel="All Events"
-          linkStyle={{
-            buttonColor: "white",
-            textColor: theme.colors.background,
-          }}
-          style={{ backgroundColor: theme.colors.background }}
-        >
-          {featuredEvents?.length === 0 ? (
-            <ActivityIndicator animating={true} />
-          ) : (
-            <SwiperFlatList
-              autoplay
-              autoplayDelay={6}
-              autoplayLoop
-              index={0}
-              data={featuredEvents}
-              paginationActiveColor="#FF6347"
-              paginationDefaultColor="gray"
-              paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
-              paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
-              snapToAlignment="center" // Items snap to center
-              snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
-              decelerationRate="fast"
-              renderItem={({ item }) => (
-                <CardSurface key={item.id} width={width} height={height}>
-                  <EventCard event={item} />
-                </CardSurface>
-              )}
-            />
-          )}
-        </FeaturedSurface>
-        <Divider />
-        <FeaturedSurface
-          headline="Featured Resources"
-          height={height}
-          link="/resources/"
-          linkLabel="All Resources"
-          style={{ backgroundColor: theme.colors.surface }}
-          linkStyle={{
-            buttonColor: "white",
-            textColor: theme.colors.background,
-          }}
-        >
-          {featuredResources.length === 0 ? (
-            <ActivityIndicator animating={true} />
-          ) : (
-            <SwiperFlatList
-              autoplay
-              autoplayDelay={6}
-              autoplayLoop
-              index={0}
-              data={featuredResources}
-              paginationActiveColor="#FF6347"
-              paginationDefaultColor="gray"
-              paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
-              paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
-              snapToAlignment="center" // Items snap to center
-              snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
-              decelerationRate="fast"
-              renderItem={({ item }) => (
-                <CardSurface height={height} width={width} key={item.id}>
-                  <PostCard post={item} />
-                </CardSurface>
-              )}
-            />
-          )}
-        </FeaturedSurface>
-        <Divider />
-        <View style={styles.surfaceWrap}>
-          <Surface style={styles.rewardsSurface} elevation={3}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.headerText}>Member Rewards</Text>
-            </View>
-            <View style={styles.chipContainer}>
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                Become a member today and enjoy these rewards and more!
-              </Text>
-            </View>
-            <SwiperFlatList
-              autoplay
-              autoplayDelay={5}
-              autoplayLoop
-              index={0}
-              data={rewardsItems}
-              paginationActiveColor="#FF6347"
-              paginationDefaultColor="gray"
-              paginationStyleItem={{ width: 8, height: 8 }}
-              snapToAlignment="center"
-              snapToInterval={width * 0.8 + 10 * 2}
-              decelerationRate="fast"
-              renderItem={({ item }) => (
-                <Card key={item.id} style={styles.rewardCard}>
-                  <Card.Cover
-                    source={{ uri: item.image }}
-                    resizeMode="contain"
-                  />
-                  <Card.Title title={item.title} />
-                </Card>
-              )}
-            />
+  return <Redirect href="(home)" />;
 
-            <View style={styles.rewardsButtonsContainer}>
-              <Button
-                mode="contained"
-                onPress={() => alert("Learn More Pressed")}
-              >
-                Learn More
-              </Button>
-              {/* <Button
-                mode="contained"
-                onPress={() => {
-                  authorize({
-                    additionalParameters: { ui_locales: "en-US,es-ES" },
-                  });
-                }}
-                style={styles.signUpButton}
-              >
-                Sign Up Now
-              </Button> */}
-            </View>
-          </Surface>
-        </View>
-      </ScrollView>
-      <StatusBar style={Platform.OS === "ios" ? "light" : "dark"} />
-    </View>
-  );
+
+//   return (
+//     <View style={styles.container}>
+//       <Image
+//         source={logo}
+//         style={{
+//           width: "80%",
+//           height: 100,
+//           objectFit: "contain",
+//           marginTop: 10,
+//         }}
+//       />
+//       <Divider />
+//       <ScrollView>
+//         <FeaturedSurface
+//           headline="Featured Events"
+//           height={height}
+//           link="/events/"
+//           linkLabel="All Events"
+//           linkStyle={{
+//             buttonColor: "white",
+//             textColor: theme.colors.background,
+//           }}
+//           style={{ backgroundColor: theme.colors.background }}
+//         >
+//           {featuredEvents?.length === 0 ? (
+//             <ActivityIndicator animating={true} />
+//           ) : (
+//             <SwiperFlatList
+//               autoplay
+//               autoplayDelay={6}
+//               autoplayLoop
+//               index={0}
+//               data={featuredEvents}
+//               paginationActiveColor="#FF6347"
+//               paginationDefaultColor="gray"
+//               paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+//               paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+//               snapToAlignment="center" // Items snap to center
+//               snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+//               decelerationRate="fast"
+//               renderItem={({ item }) => (
+//                 <CardSurface key={item.id} width={width} height={height}>
+//                   <EventCard event={item} />
+//                 </CardSurface>
+//               )}
+//             />
+//           )}
+//         </FeaturedSurface>
+//         <Divider />
+//         <FeaturedSurface
+//           headline="Featured Resources"
+//           height={height}
+//           link="/resources/"
+//           linkLabel="All Resources"
+//           style={{ backgroundColor: theme.colors.surface }}
+//           linkStyle={{
+//             buttonColor: "white",
+//             textColor: theme.colors.background,
+//           }}
+//         >
+//           {featuredResources.length === 0 ? (
+//             <ActivityIndicator animating={true} />
+//           ) : (
+//             <SwiperFlatList
+//               autoplay
+//               autoplayDelay={6}
+//               autoplayLoop
+//               index={0}
+//               data={featuredResources}
+//               paginationActiveColor="#FF6347"
+//               paginationDefaultColor="gray"
+//               paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+//               paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+//               snapToAlignment="center" // Items snap to center
+//               snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+//               decelerationRate="fast"
+//               renderItem={({ item }) => (
+//                 <CardSurface height={height} width={width} key={item.id}>
+//                   <PostCard post={item} />
+//                 </CardSurface>
+//               )}
+//             />
+//           )}
+//         </FeaturedSurface>
+//         <Divider />
+//         <View style={styles.surfaceWrap}>
+//           <Surface style={styles.rewardsSurface} elevation={3}>
+//             <View style={styles.headerContainer}>
+//               <Text style={styles.headerText}>Member Rewards</Text>
+//             </View>
+//             <View style={styles.chipContainer}>
+//               <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+//                 Become a member today and enjoy these rewards and more!
+//               </Text>
+//             </View>
+//             <SwiperFlatList
+//               autoplay
+//               autoplayDelay={5}
+//               autoplayLoop
+//               index={0}
+//               data={rewardsItems}
+//               paginationActiveColor="#FF6347"
+//               paginationDefaultColor="gray"
+//               paginationStyleItem={{ width: 8, height: 8 }}
+//               snapToAlignment="center"
+//               snapToInterval={width * 0.8 + 10 * 2}
+//               decelerationRate="fast"
+//               renderItem={({ item }) => (
+//                 <Card key={item.id} style={styles.rewardCard}>
+//                   <Card.Cover
+//                     source={{ uri: item.image }}
+//                     resizeMode="contain"
+//                   />
+//                   <Card.Title title={item.title} />
+//                 </Card>
+//               )}
+//             />
+
+//             <View style={styles.rewardsButtonsContainer}>
+//               <Button
+//                 mode="contained"
+//                 onPress={() => alert("Learn More Pressed")}
+//               >
+//                 Learn More
+//               </Button>
+//               {/* <Button
+//                 mode="contained"
+//                 onPress={() => {
+//                   authorize({
+//                     additionalParameters: { ui_locales: "en-US,es-ES" },
+//                   });
+//                 }}
+//                 style={styles.signUpButton}
+//               >
+//                 Sign Up Now
+//               </Button> */}
+//             </View>
+//           </Surface>
+//         </View>
+//       </ScrollView>
+//       <StatusBar style={Platform.OS === "ios" ? "light" : "dark"} />
+//     </View>
+//   );
 }
-10;
+
 
 const styles = StyleSheet.create({
   container: {

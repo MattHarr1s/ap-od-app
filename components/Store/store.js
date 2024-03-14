@@ -161,9 +161,13 @@ const store = createStore(persist({
       const value = await AsyncStorage.getItem(key);
       return JSON.parse(value);
     },
-    setItem: function (key, value) {      
-      AsyncStorage.setItem(key, JSON.stringify(value))
-    }
+    setItem: async function (key, value) {      
+      await AsyncStorage.setItem(key, JSON.stringify(value))
+    },
+    removeItem: async function (key) {
+      await AsyncStorage.removeItem(key);
+    },
+
   },
   allow: ['onboardingStep', 'interestedResourceCategories', 
   'interestedEventCategories', 'locationServicesEnabled', 

@@ -75,7 +75,7 @@ export default function UserScreen() {
         console.error(error);
       }
     };
-    await loadUserEventsAndResources();
+    loadUserEventsAndResources();
   }, []);
 
   return (
