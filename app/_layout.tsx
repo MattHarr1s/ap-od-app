@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { StoreProvider, useStoreRehydrated, useStoreState } from "easy-peasy";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import store from "../components/Store/store";
 import { SplashScreen, Stack, useRootNavigationState } from "expo-router";
 import { useFonts } from "expo-font";
@@ -8,6 +7,7 @@ import { useColorScheme } from "react-native";
 import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
+  configureFonts,
 } from "react-native-paper";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -15,9 +15,16 @@ import { Auth0Provider } from "react-native-auth0";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
+const fontConfig = {
+  fontFamily: "Helvetica"    
+};
+
+
+
 const theme = {
   ...DefaultTheme, // or MD3DarkTheme
-  roundness: 2,
+  fonts: configureFonts({config: fontConfig}),
+  roundness: 2,  
   colors: {
     ...DefaultTheme.colors,
     primary: "#ea5b3a", // Red Orange
@@ -47,6 +54,7 @@ export default function RootLayout() {
 
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    Helvetica: require("../assets/fonts/helvetica.ttf"),
     ...FontAwesome.font,
   });
 
@@ -67,28 +75,9 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-function OnBoardingLayoutNav() {
-  return (
-    <Auth0Provider
-      domain="dev-v4w65pck0ernl172.us.auth0.com"
-      clientId="mAbFw0HUixGgHaCl6f6vSwUhbJRNXRIG"
-    >
-      <StoreProvider store={store}>
-        <PaperProvider theme={theme}>
-          <SafeAreaProvider>
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-            </Stack>
-          </SafeAreaProvider>
-        </PaperProvider>
-      </StoreProvider>
-    </Auth0Provider>
-  );
-}
 
 function AppContainer() {
-  const rehydrated = useStoreRehydrated();
-  const onboardingStep = useStoreState((state) => state.onboardingStep);
+  const rehydrated = useStoreRehydrated();  
   if (!rehydrated) {
     return null;
   }  

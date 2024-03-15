@@ -46,8 +46,7 @@ const rewardsItems = [
 
 export default function UserScreen() {
   const theme = useTheme();
-  const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);  
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState(null);
 
@@ -56,6 +55,8 @@ export default function UserScreen() {
   };
   const featuredEvents = useStoreState((state) => state.featuredEvents);
   const featuredResources = useStoreState((state) => state.featuredResources);
+  const forYouResources = useStoreState((state) => state.forYouResources);
+  const forYouEvents = useStoreState((state) => state.forYouEvents);
   const getFeaturedEvents = useStoreActions<MyActions>(
     (actions) => actions.fetchFeaturedEvents
   );
@@ -67,16 +68,36 @@ export default function UserScreen() {
     (actions) => actions.fetchFeaturedResources
   );
 
-  useEffect(()  =>  {
+  const setEvents = useStoreActions((actions) => actions.setEvents);
+  const setResources = useStoreActions((actions) => actions.setResources);
+  
+
+  useEffect(() => {
     const loadUserEventsAndResources = async () => {
       try {
         await fetchUserEventsAndResources();
-        SplashScreen.hideAsync();
       } catch (error) {
         console.error(error);
       }
     };
+    const loadFeaturedEvents = async () => {
+      try {
+        await getFeaturedEvents();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const loadFeaturedResources = async () => {
+      try {
+        await getFeaturedResources();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    loadFeaturedEvents();
+    loadFeaturedResources();
     loadUserEventsAndResources();
+    SplashScreen.hideAsync();
   }, []);
 
   return (
@@ -93,14 +114,89 @@ export default function UserScreen() {
       <Divider />
       <ScrollView>
         <FeaturedSurface
+          headline="Delete Section"
+          height={height}
+          style={{ backgroundColor: theme.colors.surface }}
+        >
+          <Button
+            mode="contained"
+            onPress={() => setEvents([])}
+          >
+            Delete Events
+          </Button>
+          <Button
+            mode="contained"
+            onPress={() => setResources([])}
+          >
+            Delete Resources
+          </Button>
+          </FeaturedSurface>
+        <FeaturedSurface
           headline="For You"
           height={height}
           style={{ backgroundColor: theme.colors.surface }}
         >
-          <Text style={styles.title}>Welcome to the AP App</Text>
-          <Text style={styles.title}>Your one stop shop for all things AP</Text>
-          <Text style={styles.title}>Get Started</Text>
+          {forYouResources.length === 0 ? (
+            <ActivityIndicator animating={true} />
+          ) :
+          (
+            <SwiperFlatList
+              autoplay
+              autoplayDelay={6}
+              autoplayLoop
+              index={0}
+              data={forYouResources}
+              paginationActiveColor="#FF6347"
+              paginationDefaultColor="gray"
+              paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+              paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+              snapToAlignment="center" // Items snap to center
+              snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+              decelerationRate="fast"
+              renderItem={({ item }) => (
+                <CardSurface key={item.id} width={width} height={height}>
+                  <PostCard post={item} />
+                </CardSurface>
+              )}
+            />
+          )
+          }
         </FeaturedSurface>
+        <FeaturedSurface
+          headline="Events Near You"
+          height={height}
+          link="/events/"
+          linkLabel="All Events"
+          linkStyle={{
+            buttonColor: "white",
+            textColor: theme.colors.background,
+          }}
+          style={{ backgroundColor: theme.colors.background }}>
+          {forYouEvents.length === 0 ? (
+            <ActivityIndicator animating={true} />
+          ) : (
+            <SwiperFlatList
+              autoplay
+              autoplayDelay={6}
+              autoplayLoop
+              index={0}
+              data={forYouEvents}
+              paginationActiveColor="#FF6347"
+              paginationDefaultColor="gray"
+              paginationStyle={{ position: "absolute", bottom: 10 }} // Adjust pagination position if necessary
+              paginationStyleItem={{ width: 8, height: 8 }} // Adjust pagination dots size if necessary
+              snapToAlignment="center" // Items snap to center
+              snapToInterval={width * 0.8 + 10 * 2} // Snap to the interval of card width plus margin
+              decelerationRate="fast"
+              renderItem={({ item }) => (
+                <CardSurface key={item.id} width={width} height={height}>
+                  <EventCard event={item} />
+                </CardSurface>
+              )}
+            />
+          )}
+
+          </FeaturedSurface>
 
         <FeaturedSurface
           headline="Featured Events"

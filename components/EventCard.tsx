@@ -45,7 +45,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, isSingle }) => {
               textColor="#ffffff"
               onPress={() => {
                 router.replace({
-                  pathname: "/event/[slug]",
+                  pathname: "(home)/event/[slug]",
                   params: { slug: event.slug },
                 } as never); // Provide the correct type for the argument
               }}

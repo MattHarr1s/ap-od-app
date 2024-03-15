@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, ScrollView, Image } from "react-native";
 import { Link } from "expo-router";
 import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useStoreState, useStoreActions } from "easy-peasy";
 
 import { useEffect, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
@@ -25,6 +26,9 @@ export default function EventScreen() {
   const { width } = useWindowDimensions();
   const availableWidth = Math.min(width, 500);
   const navigation = useNavigation();
+  const forYouEvents = useStoreState((state) => state.forYouEvents);
+  const featuredEvents = useStoreState((state) => state.featuredEvents);
+  
   useEffect(() => {
     const getEvent = async () => {
       const response = await fetch(

@@ -2,6 +2,7 @@ import React, { useEffect, useState, memo, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator } from "react-native-paper";
 import { FlatList, Platform, StyleSheet, Dimensions } from "react-native";
+import { useStoreState, useStoreActions, useStoreDispatch } from "easy-peasy";
 import { Link } from "expo-router";
 import { View } from "react-native";
 import { Text, Card } from "react-native-paper";
@@ -18,52 +19,48 @@ const keyExtractor = (item: Post) => item.id.toString();
 
 const PostItem = memo(({ item }: { item: Post }) => (
   <CardSurface key={item.id} width={width + 20} height={height + 20}>
-    <PostCard post={item} />
+    <PostCard post={item} isSingle={false} />
   </CardSurface>
 ));
 
 export default function ResourcesScreen() {
-  const [newsItems, setNewsItems] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+  const resources = useStoreState((state) => state.resources);
+  const fetchResources = useStoreActions((actions) => actions.fetchResources);
 
+  
   const renderItem = useCallback(
     ({ item }: { item: Post }) => <PostItem item={item} />,
     []
   );
 
   useEffect(() => {
-    const getNews = async () => {
-      try {
-        const response = await fetch(
-          "https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=5"
-        );
-        const json = await response.json();
-        const news = transformPosts(json);
-        setNewsItems(news);
-        setLoading(false);
-    
-      } catch (error) {
-        console.error(error);
-        setLoading(false);
-      }
-    };
-    getNews();
-  }, []);
+    fetchResources();    
+  }, [resources.length]);
+  
 
   return (
     <View style={styles.container}>
-      {loading ? (
+      {resources.length === 0 && <ActivityIndicator animating={true} />}
+         <FlatList
+           data={resources}
+           keyExtractor={keyExtractor}
+           renderItem={renderItem}
+           initialNumToRender={5}
+           maxToRenderPerBatch={5}
+           windowSize={5}
+         />
+      {/* {loading ? (
         <ActivityIndicator animating={true} />
       ) : (
-        <FlatList
-          data={newsItems}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          initialNumToRender={5}
-          maxToRenderPerBatch={5}
-          windowSize={5}
-        />
-      )}
+        // <FlatList
+        //   data={resources}
+        //   keyExtractor={keyExtractor}
+        //   renderItem={renderItem}
+        //   initialNumToRender={5}
+        //   maxToRenderPerBatch={5}
+        //   windowSize={5}
+        // />
+      )} */}
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>

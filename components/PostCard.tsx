@@ -13,6 +13,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, isSingle }) => {
   const theme = useTheme();
+  console.log("PostCard", post);
   return (
     <Card
       style={{

@@ -31,12 +31,43 @@ const store = createStore(persist({
   setEvents: action((state, events) => {
     state.events = events;
   }),
+  setResources: action((state, resources) => {
+    state.resources = resources;
+  }),
+  addEvent: action((state, event) => {
+    if (state.events.find(e => e.id === event.id)) {
+      return;
+    }
+    state.events.push(event);
+  }),
+  removeEvent: action((state, event) => {
+    state.events = state.events.filter(e => e.id !== event.id);
+  }),
+  addResource: action((state, resource) => {
+    if (state.resources.find(r => r.id === resource.id)) {
+      return;
+    }
+    state.resources.push(resource);
+  }
+  ),
+  removeResource: action((state, resource) => {
+    state.resources = state.resources.filter(r => r.id !== resource.id);
+  }
+  ),
   setFeaturedEvents: action((state, events) => {
     state.featuredEvents = events;
   }
   ),
   setFeaturedResources: action((state, resources) => {
     state.featuredResources = resources;
+  }
+  ),
+  setForYouEvents: action((state, events) => {
+    state.forYouEvents = events;
+  }
+  ),
+  setForYouResources: action((state, resources) => {
+    state.forYouResources = resources;
   }
   ),
   setResourceCategories: action((state, categories) => {
@@ -71,7 +102,7 @@ const store = createStore(persist({
     state.interestedEventCategories = state.interestedEventCategories.filter(category => category !== categoryId);
   }
   ),
-  setInterestedResourceCategories: action((state, categories) => {    
+  setInterestedResourceCategories: action((state, categories) => {
     state.interestedResourceCategories = categories;
   }
   ),
@@ -97,28 +128,33 @@ const store = createStore(persist({
     const data = await response.json();
     transformedFeaturedEvents = await transformEvents(data.events);
     actions.setFeaturedEvents(transformedFeaturedEvents);
+    transformedFeaturedEvents.forEach(event => {
+      actions.addEvent(event);
+    }
+    );
   }),
   fetchResources: thunk(async (actions, payload) => {
     const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=20');
     const data = await response.json();
-    actions.setResources(data);
+    const transformedResources = transformPosts(data);
+    actions.setResources(transformedResources);
   }),
   fetchFeaturedResources: thunk(async (actions, payload) => {
     const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=5');
     const data = await response.json();
-    const transformedFeaturedResources = await transformPosts(data);
-    actions.setFeaturedResources(transformedFeaturedResources);
+    const transformedFeaturedResources = transformPosts(data);
+    actions.setFeaturedResources(transformedFeaturedResources);  
   }),
 
   fetchResourceCategories: thunk(async (actions, payload) => {
     const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/categories?_embed&parent=26&_fields=id,name,slug,&per_page=100');
-    const data = await response.json();    
-    const newData = data.map((category) => {    
-      let newCategory = transformCategory(category);  
+    const data = await response.json();
+    const newData = data.map((category) => {
+      let newCategory = transformCategory(category);
       return {
         id: newCategory.id,
         name: newCategory.name,
-        slug: newCategory.slug        
+        slug: newCategory.slug
       }
     });
     actions.setResourceCategories(newData);
@@ -126,7 +162,7 @@ const store = createStore(persist({
   ),
   fetchResourceTaxonomies: thunk(async (actions, payload) => {
     const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/taxonomies?type=post&_fields=author,id,excerpt,title,link');
-    const data = await response.json();    
+    const data = await response.json();
     actions.setResourceCategories(data);
   }
   ),
@@ -142,7 +178,7 @@ const store = createStore(persist({
       }
     }
     );
-    
+
 
 
     actions.setEventCategories(newData);
@@ -150,13 +186,23 @@ const store = createStore(persist({
   ),
   fetchUserEventsAndResources: thunk(async (actions, payload, helpers) => {
     const { location, interestedResourceCategories, interestedEventCategories, } = helpers.getState();
+    // loop through interestedResourceCategories and interestedEventCategories and fetch resources and events
+
+    //create comma separated string of category ids for resources
+    const resourceCategories = interestedResourceCategories.join(',');
+    console.log(resourceCategories);
+    const resources = await fetch(`https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=${resourceCategories}`);
+    const resourcesData = await resources.json();
+    const newResources = await transformPosts(resourcesData);
+    actions.setForYouResources(newResources);
+
+    const events = await fetch(`https://staging.ap-od.org/wp-json/tribe/events/v1/events?_embed&geoloc=true&geoloc_lat=${location.latitude}&geoloc_long=${location.longitude}`);
+    const eventsData = await events.json();
+    console.log(eventsData);
+    const newEvents = await transformEvents(eventsData.events);
+    actions.setForYouEvents(newEvents);
 
 
-
-    // const resources = await fetch(`https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=${payload}`);
-    // const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=26&per_page=20');
-    // const data = await response.json();
-    // actions.setResources(data);
   }),
 
   setZipCode: action((state, zipCode) => {
@@ -179,11 +225,11 @@ const store = createStore(persist({
   }),
 }, {
   storage: {
-    getItem: async function (key) {      
+    getItem: async function (key) {
       const value = await AsyncStorage.getItem(key);
       return JSON.parse(value);
     },
-    setItem: async function (key, value) {      
+    setItem: async function (key, value) {
       await AsyncStorage.setItem(key, JSON.stringify(value))
     },
     removeItem: async function (key) {
@@ -191,13 +237,13 @@ const store = createStore(persist({
     },
 
   },
-  allow: ['onboardingStep', 'interestedResourceCategories', 
-  'interestedEventCategories', 'locationServicesEnabled', 
-  'location', 'zipCode', 'events', 'featuredEvents', 
-  'featuredResources', 'resourceCategories', 'eventCategories', 
-  'resourceCategories', 'resourceTaxonomies', 
-  'forYouEvents', 'forYouResources', 'resources', 
-  'favoriteEvents']
+  allow: ['onboardingStep', 'interestedResourceCategories',
+    'interestedEventCategories', 'locationServicesEnabled',
+    'location', 'zipCode', 'events', 'featuredEvents',
+    'featuredResources', 'resourceCategories', 'eventCategories',
+    'resourceCategories', 'resourceTaxonomies',
+    'forYouEvents', 'forYouResources', 'resources',
+    'favoriteEvents']
 }));
 
 
