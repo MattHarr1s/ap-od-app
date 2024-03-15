@@ -1,5 +1,5 @@
 import { createStore, action, thunk, persist } from 'easy-peasy';
-import { transformEvents, transformPosts } from '../../utils/transformers';
+import { transformEvents, transformPosts, transformCategory } from '../../utils/transformers';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -55,7 +55,23 @@ const store = createStore(persist({
     state.eventTaxonomies = taxonomies;
   }
   ),
-  setInterestedResourceCategories: action((state, categories) => {
+  addInterestedResourceCategory: action((state, categoryId) => {
+    state.interestedResourceCategories.push(categoryId);
+  }
+  ),
+  addInterestedEventCategory: action((state, categoryId) => {
+    state.interestedEventCategories.push(categoryId);
+  }
+  ),
+  removeInterestedResourceCategory: action((state, categoryId) => {
+    state.interestedResourceCategories = state.interestedResourceCategories.filter(category => category !== categoryId);
+  }
+  ),
+  removeInterestedEventCategory: action((state, categoryId) => {
+    state.interestedEventCategories = state.interestedEventCategories.filter(category => category !== categoryId);
+  }
+  ),
+  setInterestedResourceCategories: action((state, categories) => {    
     state.interestedResourceCategories = categories;
   }
   ),
@@ -95,40 +111,46 @@ const store = createStore(persist({
   }),
 
   fetchResourceCategories: thunk(async (actions, payload) => {
-    const response = await fetch('https://staging.ap-od.org//wp-json/wp/v2/categories?&_embed&type=post');
-
-    const data = await response.json();
-    const newData = data.filter((category) => {
-      if (category?.name?.includes('Facilitator')) {
-        return null;
-      }
+    const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/categories?_embed&parent=26&_fields=id,name,slug,&per_page=100');
+    const data = await response.json();    
+    const newData = data.map((category) => {    
+      let newCategory = transformCategory(category);  
       return {
-        id: category.id,
-        name: category.name,
-        slug: category.slug
+        id: newCategory.id,
+        name: newCategory.name,
+        slug: newCategory.slug        
       }
     });
     actions.setResourceCategories(newData);
   }
   ),
   fetchResourceTaxonomies: thunk(async (actions, payload) => {
-    const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/taxonomies?type=post');
-    const data = await response.json();
+    const response = await fetch('https://staging.ap-od.org/wp-json/wp/v2/taxonomies?type=post&_fields=author,id,excerpt,title,link');
+    const data = await response.json();    
     actions.setResourceCategories(data);
   }
   ),
   fetchEventCategories: thunk(async (actions, payload) => {
-    const response = await fetch('https://staging.ap-od.org/wp-json/tribe/events/v1/tags?exclude=150&exclude=156&exclude=160');
+    const response = await fetch('https://staging.ap-od.org/wp-json/tribe/events/v1/tags?&per_page=25');
     const data = await response.json();
+    newData = data.tags.map((category) => {
+      let newCategory = transformCategory(category);
+      return {
+        id: newCategory.id,
+        name: newCategory.name,
+        slug: newCategory.slug
+      }
+    }
+    );
+    
 
-    actions.setEventCategories(data.tags);
+
+    actions.setEventCategories(newData);
   }
   ),
   fetchUserEventsAndResources: thunk(async (actions, payload, helpers) => {
     const { location, interestedResourceCategories, interestedEventCategories, } = helpers.getState();
-    console.log('loc',location);
-    console.log(interestedEventCategories);
-    console.log(interestedResourceCategories);
+
 
 
     // const resources = await fetch(`https://staging.ap-od.org/wp-json/wp/v2/posts?_embed&categories=${payload}`);

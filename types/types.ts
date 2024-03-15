@@ -70,14 +70,14 @@ export interface RewardItem {
 }
 
 
-interface Taxonomy {
+export interface Taxonomy {
   name: string;
   slug: string;
   description: string;
   types: string[];
 }
 
-interface Category {
+export interface Category {
   id: number;
   count: number;
   description: string;
@@ -86,6 +86,11 @@ interface Category {
   slug: string;
   taxonomy: string;
   parent: number;
+}
+
+export interface LocationCoords {
+  latitude?: number;
+  longitude?: number;
 }
 
 interface ApiResponse<T> {

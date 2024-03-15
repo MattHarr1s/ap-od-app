@@ -54,7 +54,7 @@ const rewardsItems = [
   },
 ];
 
-SplashScreen.preventAutoHideAsync();
+
 
 export default function HomeScreen() {
   // const { authorize, clearSession, user, error, getCredentials, isLoading } =
@@ -80,6 +80,7 @@ export default function HomeScreen() {
   );
 
   if (onboardingStep < 5) {
+    SplashScreen.hideAsync();
     return (
       <View style={styles.onboarding}>
         <Image
@@ -93,6 +94,7 @@ export default function HomeScreen() {
         />
         <Divider />
         <Onboarding />
+        <StatusBar style={Platform.OS === "ios" ? "light" : "dark"} />
       </View>
     );
   }
@@ -240,7 +242,7 @@ export default function HomeScreen() {
 //           </Surface>
 //         </View>
 //       </ScrollView>
-//       <StatusBar style={Platform.OS === "ios" ? "light" : "dark"} />
+//       
 //     </View>
 //   );
 }

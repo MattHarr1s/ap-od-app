@@ -12,21 +12,16 @@ import {
   ProgressBar,
 } from "react-native-paper";
 import { StyleSheet } from "react-native";
-import { useStoreState, useStoreActions, useStoreDispatch } from "easy-peasy";
+import { useStoreState, useStoreActions } from "easy-peasy";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import FeaturedHeadline from "./FeaturedHeadline";
 import FeaturedSurface from "./FeaturedSurface";
-import { set } from "react-hook-form";
+import CategorySelector from "./CategorySelector";
+
 const Onboarding = () => {
-  const [selectedResourceCategories, setSelectedResourceCategories] = useState(
-    []
-  );
   const [showDialog, setShowDialog] = useState(false);
 
-  const [selectedEventCategories, setSelectedEventCategories] = useState([]);
-  const zipCode = useStoreState((state) => state.zipCode);
-  const setZipCode = useStoreActions((actions) => actions.setZipCode);
   const onboardingStep = useStoreState((state) => state.onboardingStep);
   const setOnboardingStep = useStoreActions(
     (actions) => actions.setOnboardingStep
@@ -38,6 +33,9 @@ const Onboarding = () => {
   );
   const interestedResourceCategories = useStoreState(
     (state) => state.interestedResourceCategories
+  );
+  const interestedEventCategories = useStoreState(
+    (state) => state.interestedEventCategories
   );
   const setInterestedResourceCategories = useStoreActions(
     (actions) => actions.setInterestedResourceCategories
@@ -52,17 +50,31 @@ const Onboarding = () => {
   const fetchUserEventsAndResources = useStoreActions(
     (actions) => actions.fetchUserEventsAndResources
   );
-    
-
+  const selectedResourceCategories = useStoreState(
+    (state) => state.interestedResourceCategories
+  );
+  const addInterestedResourceCategory = useStoreActions(
+    (actions) => actions.addInterestedResourceCategory
+  );
+  const removeInterestedResourceCategory = useStoreActions(
+    (actions) => actions.removeInterestedResourceCategory
+  );
+  const addInterestedEventCategory = useStoreActions(
+    (actions) => actions.addInterestedEventCategory
+  );
+  const removeInterestedEventCategory = useStoreActions(
+    (actions) => actions.removeInterestedEventCategory
+  );
 
   const location = useStoreState((state) => state.location);
   const setLocation = useStoreActions((actions) => actions.setLocation);
 
   useEffect(() => {
-    fetchResourceCategories();
-    fetchEventCategories();
-    console.log("Onboarding Step", onboardingStep);
-    console.log("selectedResourceCategories", interestedResourceCategories);
+    async function fetchData() {
+      await fetchResourceCategories();
+      await fetchEventCategories();
+    }
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -83,13 +95,29 @@ const Onboarding = () => {
     })();
   }, []);
 
+  const handleChangeResourceCategory = (category) => {
+    let categoryId = category.id;
+    console.log("Category ID", categoryId);
+    if (interestedResourceCategories.includes(categoryId)) {
+      removeInterestedResourceCategory(categoryId);
+    } else addInterestedResourceCategory(categoryId);
+  };
+
+  const handleChangeEventCategory = (category) => {
+    if (interestedEventCategories.includes(category.id)) {
+      removeInterestedEventCategory(category.id);
+    } else {
+      addInterestedEventCategory(category.id);
+    }
+  };
+
   const handleSelectCategory = (category, type) => {
     let selectedCategories =
-      type === "event" ? selectedEventCategories : selectedResourceCategories;
+      type === "event" ? interestedEventCategories : interestedEventCategories;
     let setSelectedCategories =
       type === "event"
-        ? setSelectedEventCategories
-        : setSelectedResourceCategories;
+        ? setInterestedEventCategories
+        : setInterestedResourceCategories;
     if (selectedCategories.includes(category)) {
       setSelectedCategories(
         selectedCategories.filter((item) => item.id !== category.id)
@@ -99,18 +127,20 @@ const Onboarding = () => {
     }
   };
 
+
+
   const handleStep2Change = () => {
-    setInterestedResourceCategories(selectedResourceCategories);
+    // setInterestedResourceCategories(selectedResourceCategories);
     setOnboardingStep(2);
   };
   const handleStep3Change = () => {
-    setInterestedEventCategories(selectedEventCategories);
+    // setInterestedEventCategories(selectedEventCategories);
     setOnboardingStep(3);
   };
   const handleStep4Change = () => {
     fetchUserEventsAndResources("all");
     setOnboardingStep(5);
-    router.replace("/home/index");
+    router.replace("(home)");
   };
 
   const requestLocation = async () => {
@@ -122,29 +152,33 @@ const Onboarding = () => {
   return (
     <>
       <Surface elevation={4} style={styles.surface}>
-        
         <ProgressBar progress={onboardingStep * 0.25} />
 
         {onboardingStep === 0 && (
           <>
             <Text variant="headlineLarge" style={{ color: "black" }}>
-              Welcome to the Abriendo Puertas | Opening Doors App
+              Welcome to Your Abriendo Puertas | Opening Doors App
             </Text>
             <Text>
               This app is designed to help you and your family learn and grow
               together. It is a tool to help you learn about your child's
-              development and how to support them. It also has information about
-              your rights and how to advocate for your family and community.
-              This app is for you and your family to use together. It is a
-              resource for you to use at your own pace. We hope you find it
-              helpful and that it helps you and your family grow together.
+              development and how to support them with resources and advocacy.
             </Text>
             <Text>
               To maximize the benefits of the app, we will ask you a few
               questions to help us understand your family's needs and to
-              personalize the content for you.
+              personalize the resources for you.
             </Text>
-            <Button mode="contained" onPress={() => {console.log('press'), setOnboardingStep(1)}}>
+            <Text>
+              We hope you find it helpful and that it helps you and your family
+              grow together.
+            </Text>
+            <Button
+              mode="contained"
+              onPress={() => {
+                setOnboardingStep(1);
+              }}
+            >
               Get Started
             </Button>
           </>
@@ -153,34 +187,29 @@ const Onboarding = () => {
           <>
             <Text>Step {onboardingStep}</Text>
             <Text variant="headlineLarge" style={{ color: "black" }}>
-              {selectedResourceCategories.length < 3
+              {interestedResourceCategories.length < 3
                 ? `Select ${
-                    3 - selectedResourceCategories.length
+                    3 - interestedResourceCategories.length
                   } or more categories that interest you`
                 : "Great! You're all set!"}
             </Text>
             <Text>
               This will help us personalize the content for you and your family.
             </Text>
-            <View style={styles.chipCard}>
-              {resourceCategories?.map((category) => (
-                <Chip
-                  key={category.id}
-                  onPress={() => handleSelectCategory(category, "resources")}
-                  showSelectedOverlay={true}
-                  elevated={true}
-                  compact={true}
-                  style={styles.chip}
-                  selected={selectedResourceCategories.includes(category)}
-                >
-                  {category.name}
-                </Chip>
+            {interestedResourceCategories.length < 0 &&
+              interestedResourceCategories.map((category) => (
+                <Text>{category.name}</Text>
               ))}
-            </View>
-
+            <CategorySelector
+              categories={resourceCategories}
+              selectedCategories={interestedResourceCategories}
+              onSelectCategory={(category) =>
+                handleChangeResourceCategory(category)
+              }
+            />
             <Button
               mode="contained"
-              disabled={selectedResourceCategories.length < 3}
+              disabled={interestedResourceCategories.length < 3}
               onPress={() => handleStep2Change()}
             >
               Next
@@ -191,31 +220,23 @@ const Onboarding = () => {
           <>
             <Text>Step {onboardingStep}</Text>
             <Text variant="headlineLarge" style={{ color: "black" }}>
-              {selectedEventCategories.length < 3
+              {interestedEventCategories.length < 3
                 ? `Select ${
-                    3 - selectedEventCategories.length
+                    3 - interestedEventCategories.length
                   } or more types of events that interest you`
                 : "Great! You're all set!"}
             </Text>
             <Text>This will help us personalize the events you are shown</Text>
-            <View style={styles.chipCard}>
-              {eventCategories?.map((category) => (
-                <Chip
-                  key={category.id}
-                  onPress={() => handleSelectCategory(category, "event")}
-                  showSelectedOverlay={true}
-                  elevated={true}
-                  compact={true}
-                  style={styles.chip}
-                  selected={selectedEventCategories.includes(category)}
-                >
-                  {category.name}
-                </Chip>
-              ))}
-            </View>
+            <CategorySelector
+              categories={eventCategories}
+              selectedCategories={interestedEventCategories}
+              onSelectCategory={(category) =>
+                handleChangeEventCategory(category)
+              }
+            />
             <Button
               mode="contained"
-              disabled={selectedEventCategories.length < 3}
+              disabled={interestedEventCategories.length < 3}
               onPress={() => handleStep3Change()}
             >
               Next

@@ -151,7 +151,7 @@ export default function Home() {
         name="profile"
         options={{
           headerShown: true,
-          title: "PROFILE",
+          title: "MY PROFILE",
           tabBarLabelStyle: {
             color: "#ffffff",
             backgroundColor: "#a3cc27",

@@ -21,6 +21,7 @@ const theme = {
   colors: {
     ...DefaultTheme.colors,
     primary: "#ea5b3a", // Red Orange
+    secondary: "#f7f7f7", // White    
     accent: "#4caad8", // Blue
     background: "#60155e", // Purple
     surface: "#fcb41c", // Yellow
@@ -90,15 +91,11 @@ function AppContainer() {
   const onboardingStep = useStoreState((state) => state.onboardingStep);
   if (!rehydrated) {
     return null;
-  }
-
-
-
-  SplashScreen.hideAsync();
-  if(onboardingStep === 5) return (<Stack><Stack.Screen name="(home)" options={{ headerShown: false }}/></Stack>  )
+  }  
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(home)" options={{ headerShown: false }}/>      
     </Stack>
   );
 }

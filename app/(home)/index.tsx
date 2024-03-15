@@ -71,6 +71,7 @@ export default function UserScreen() {
     const loadUserEventsAndResources = async () => {
       try {
         await fetchUserEventsAndResources();
+        SplashScreen.hideAsync();
       } catch (error) {
         console.error(error);
       }

@@ -162,6 +162,26 @@ function transformPost(data) {
   };
 }
 
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+//function to capitalize first letter of each word using as little code as possible
+export const capitalizeFirstLetterOfEachWord = (string: string) => {
+  return string.split(' ').map(capitalizeFirstLetter).join(' ');
+}
+
+export const transformCategory = (category: any) => {
+  let newCategoryName = he.decode(category.name);
+  let transformedName = capitalizeFirstLetterOfEachWord(newCategoryName); 
+  console.log(transformedName);
+  return {
+    id: category.id,
+    name: transformedName,
+    slug: category.slug,
+  };
+}
+
 
 
 async function getMediaUrlById(mediaId: number): Promise<string> {
